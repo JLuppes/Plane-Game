@@ -16,6 +16,8 @@ import {
   cameraPos,
   keyWasPressed,
   mouseWasPressed,
+  keyDirection,
+  keyIsDown,
 } from "littlejsengine";
 
 const playerFrame = 5;
@@ -116,25 +118,45 @@ class Player extends EngineObject{
   update(){
     super.update();
 
-    if (mouseWasPressed(0)||keyWasPressed('Left')){
-      this.velocity.x = (this.velocity.x === 0)
-      ? .1
-      : this.velocity.x * -.25
-    }
+    // if (mouseWasPressed(0)||keyWasPressed('ArrowLeft') ){
+    //   this.velocity.x = (this.velocity.x === 0)
+    //   ? .1
+    //   : this.velocity.x * -.25
+    // }
 
-    // gradually increase x speed
-    if (this.velocity.x !== 0){
-      this.velocity.x *=1.05
+    // // gradually increase x speed
+    // if (this.velocity.x !== 0){
+    //   this.velocity.x *=1.05
+    // }
+
+
+    if(keyIsDown('ArrowLeft')){
+      this.velocity.x -= .01
+    }
+    if(keyIsDown('ArrowRight')){
+      this.velocity.x += .01
     }
 
     // clamp x speed
     this.velocity.x = clamp(this.velocity.x, -.35, .35)
 
-    this.angle = -this.velocity.x;
+    this.angle = this.velocity.x;
 
-    // change direction if player about to go off screen
+    // // change direction if player about to go off screen
+    // if (this.pos.x <= this.minX || this.pos.x >= this.maxX){
+    //   this.velocity.x *= -1
+    // }
+
     if (this.pos.x <= this.minX || this.pos.x >= this.maxX){
-      this.velocity.x *= -1
+      this.velocity.x = 0
+    }
+
+    if (this.pos.x <= this.minX ){
+this.pos.x +=.01
+    }
+
+        if (this.pos.x >= this.maxX ){
+this.pos.x -=.01
     }
   }
 
