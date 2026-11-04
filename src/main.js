@@ -60,11 +60,18 @@ function gameInit() {
   setCameraScale(G.tileSize);
 
   G.player = new Player(G);
+
+  G.speed = 0.1;
 }
 
 function gameUpdate() {
   // called every frame at 60 frames per second
   // handle input and update the game state
+
+  // randomly generate enemies
+  if (Math.random() > .99){
+    new Enemy(G);
+  }
 }
 
 function gameUpdatePost() {
@@ -86,6 +93,16 @@ function gameRender() {
 function gameRenderPost() {
   // called after objects are rendered
   // draw effects or hud that appear above all objects
+
+
+  if(G.player.crashed  ){
+    drawText('GAME OVER',
+      vec2(0, 0),
+      2,
+      new Color(1,0,0),
+      .5
+    )
+  }
 }
 
 // fires up LittleJS with all necessary functions and tiles
@@ -113,10 +130,13 @@ class Player extends EngineObject {
 
     // horizontal direction of player
     this.dir = 0;
+
+    this.setCollision(true,true,false,false)
   }
 
   update() {
     super.update();
+    if(this.crashed) return;
 
     // if (mouseWasPressed(0)||keyWasPressed('ArrowLeft') ){
     //   this.velocity.x = (this.velocity.x === 0)
@@ -177,6 +197,42 @@ class Player extends EngineObject {
 
     if (this.pos.y >= this.maxY) {
       this.pos.y -= 0.01;
+    }
+  }
+
+  collideWithObject(o){
+    if (this.crashed) return;
+    G.speed=0;
+    this.velocity.x = 0;
+    this.velocity.y = 0;
+    this.crashed = true;
+  }
+}
+
+
+class Enemy extends EngineObject {
+  constructor(game){
+    let x = game.width/2;
+    let y = (game.height/2) + 3;
+    let pos = vec2(rand(-x, x), y)
+
+    let frame = 8;
+    super(pos, vec2(.5), tile(frame, game.tileSize*2))
+    this.angle = 3.14
+    this.game = game;
+
+    this.setCollision(true, false, false, false)
+    this.drawSize = vec2(2);
+  }
+
+
+  update(){
+    super.update()
+    this.pos.y -= this.game.speed;
+
+    //remove object when past bottom of screen
+    if(this.pos.y < this.game.heigh / -2){
+      super.destroy()
     }
   }
 }
