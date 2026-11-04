@@ -19,6 +19,7 @@ import {
   keyIsDown,
   particleEffect,
   Sound,
+  setTileDefaultBleed,
 } from "littlejsengine";
 
 const playerFrame = 5;
@@ -97,6 +98,8 @@ function gameInit() {
   G.player = new Player(G);
 
   G.speed = 0.1;
+
+  setTileDefaultBleed(0.5);
 }
 
 function gameUpdate() {
@@ -156,6 +159,9 @@ class Player extends EngineObject {
 
     this.frame = frame;
     this.setCollision(true, true, false, false);
+
+    this.trail = [];
+    this.trailCol = new Color(1, 1, 1, 0.25);
   }
 
   update() {
@@ -214,6 +220,13 @@ class Player extends EngineObject {
     if (this.pos.y >= this.maxY) {
       this.pos.y -= 0.01;
     }
+
+    this.trail.push({ pos: this.pos.copy(), angle: this.angle });
+    this.trail = this.trail.filter((t) => {
+      t.pos.y -= G.speed;
+      return t.pos.y >= -G.height / 2;
+    });
+    console.log(this.trail);
   }
 
   collideWithObject(o) {
@@ -228,6 +241,9 @@ class Player extends EngineObject {
   }
 
   render() {
+    this.trail.forEach((t) => {
+      drawTile(t.pos, vec2(2), tile(6, G.tileSize), this.trailCol, t.angle);
+    });
     drawTile(
       this.pos,
       this.size,
