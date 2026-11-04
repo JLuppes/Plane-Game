@@ -51,13 +51,13 @@ function gameInit() {
 
   // World space center point (origin-based)
   // Useful for camera position, spawning, etc.
-  G.center = vec2(0)
+  G.center = vec2(0);
 
   // Set camera scale so that
   // 1 world unit == 1 tile
   // (1x1 object renders as 16x16 pixels)
   // cameraScale = G.tileSize;
-  setCameraScale(G.tileSize)
+  setCameraScale(G.tileSize);
 
   G.player = new Player(G);
 }
@@ -98,24 +98,24 @@ engineInit(
   G.tiles,
 );
 
-
-class Player extends EngineObject{
-  constructor(game){
-    let size = 1.5, frame = 5
-    super(cameraPos,
-      vec2(size),
-      tile(playerFrame, game.tileSize*2)
-    )
+class Player extends EngineObject {
+  constructor(game) {
+    let size = 1.5,
+      frame = 5;
+    super(cameraPos, vec2(size), tile(playerFrame, game.tileSize * 2));
 
     // edge of screen left/right
-    this.minX = (game.width-2) / -2;
-    this.maxX = (game.width-2) / 2;
+    this.minX = (game.width - 2) / -2;
+    this.maxX = (game.width - 2) / 2;
+
+    this.minY = (game.height - 2) / -2;
+    this.maxY = (game.height - 2) / 2;
 
     // horizontal direction of player
     this.dir = 0;
   }
 
-  update(){
+  update() {
     super.update();
 
     // if (mouseWasPressed(0)||keyWasPressed('ArrowLeft') ){
@@ -129,16 +129,26 @@ class Player extends EngineObject{
     //   this.velocity.x *=1.05
     // }
 
+    // if(keyIsDown('ArrowLeft')){
+    //   this.velocity.x -= .01
+    // }
+    // if(keyIsDown('ArrowRight')){
+    //   this.velocity.x += .01
+    // }
 
-    if(keyIsDown('ArrowLeft')){
-      this.velocity.x -= .01
-    }
-    if(keyIsDown('ArrowRight')){
-      this.velocity.x += .01
+    if (
+      keyIsDown("ArrowLeft") ||
+      keyIsDown("ArrowRight") ||
+      keyIsDown("ArrowUp") ||
+      keyIsDown("ArrowDown")
+    ) {
+      this.velocity.x += 0.01 * keyDirection()["x"];
+      this.velocity.y += 0.0075 * keyDirection()["y"];
     }
 
-    // clamp x speed
-    this.velocity.x = clamp(this.velocity.x, -.35, .35)
+    // clamp  speed
+    this.velocity.x = clamp(this.velocity.x, -0.35, 0.35);
+    this.velocity.y = clamp(this.velocity.y, -0.35, 0.35);
 
     this.angle = this.velocity.x;
 
@@ -147,18 +157,26 @@ class Player extends EngineObject{
     //   this.velocity.x *= -1
     // }
 
-    if (this.pos.x <= this.minX || this.pos.x >= this.maxX){
-      this.velocity.x = 0
+    if (this.pos.x <= this.minX || this.pos.x >= this.maxX) {
+      this.velocity.x = 0;
+    }
+    if (this.pos.y <= this.minY || this.pos.y >= this.maxY) {
+      this.velocity.y = 0;
     }
 
-    if (this.pos.x <= this.minX ){
-this.pos.x +=.01
+    if (this.pos.x <= this.minX) {
+      this.pos.x += 0.01;
     }
 
-        if (this.pos.x >= this.maxX ){
-this.pos.x -=.01
+    if (this.pos.x >= this.maxX) {
+      this.pos.x -= 0.01;
+    }
+    if (this.pos.y <= this.minY) {
+      this.pos.y += 0.01;
+    }
+
+    if (this.pos.y >= this.maxY) {
+      this.pos.y -= 0.01;
     }
   }
-
-
 }
