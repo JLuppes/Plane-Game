@@ -18,6 +18,7 @@ import {
   keyDirection,
   keyIsDown,
   particleEffect,
+  Sound,
 } from "littlejsengine";
 
 const playerFrame = 5;
@@ -38,7 +39,36 @@ const G = {
     red: new Color().setHex("#ff0000"),
     sky: new Color().setHex("#cfe7f7"),
   },
+  sfx: {
+    fly: new Sound([0.25, 0.5, 40, 0.5, , 0.2, , 11, , , , , , 199]),
+    hit: new Sound([
+      2.1,
+      ,
+      156,
+      0.01,
+      0.01,
+      0.3,
+      2,
+      0.6,
+      ,
+      ,
+      ,
+      ,
+      ,
+      1.3,
+      ,
+      0.2,
+      0.14,
+      0.45,
+      0.01,
+      ,
+      150,
+    ]),
+  },
 };
+
+// Particles: https://killedbyapixel.github.io/LittleJS/examples/particles/
+// Sounds: https://killedbyapixel.github.io/ZzFX/
 
 // called once after the engine starts up
 function gameInit() {
@@ -142,6 +172,7 @@ class Player extends EngineObject {
       keyIsDown("ArrowDown")
     ) {
       particleEffect("dust", vec2(this.pos.x, this.pos.y - 0.9));
+      G.sfx.fly.play(this.pos);
       this.velocity.x += 0.01 * keyDirection()["x"];
       this.velocity.y += 0.0075 * keyDirection()["y"];
     }
@@ -193,6 +224,7 @@ class Player extends EngineObject {
     this.crashed = true;
     particleEffect("explosion", this.pos);
     this.frame = this.frame + 12;
+    G.sfx.hit.play(this.pos);
   }
 
   render() {
