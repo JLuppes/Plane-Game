@@ -1,10 +1,9 @@
-"use strict";
-
 import {
   engineInit,
   drawText,
   drawTile,
   tile,
+  time,
   vec2,
   setTileDefaultPadding,
   setCanvasFixedSize,
@@ -18,10 +17,11 @@ import {
   mouseWasPressed,
   keyDirection,
   keyIsDown,
+  particleEffect,
 } from "littlejsengine";
 
 const playerFrame = 5;
-const playerSize = 32;
+const playerSize = 2.5;
 
 // each tile in tiles.png has a 1 pixel border, which stops texture bleeding
 // setTileDefaultPadding(1);
@@ -33,6 +33,11 @@ const G = {
   // Size of one tile in screen pixels
   tileSize: 16,
   tiles: ["/ships.png"],
+  cols: {
+    white: new Color().setHex("#ffffff"),
+    red: new Color().setHex("#ff0000"),
+    sky: new Color().setHex("#cfe7f7"),
+  },
 };
 
 // called once after the engine starts up
@@ -69,7 +74,7 @@ function gameUpdate() {
   // handle input and update the game state
 
   // randomly generate enemies
-  if (Math.random() > .99){
+  if (Math.random() > 0.99) {
     new Enemy(G);
   }
 }
@@ -81,27 +86,15 @@ function gameUpdatePost() {
 
 function gameRender() {
   //clear screen with white rectangle
-  drawRect(vec2(0), vec2(G.width, G.height), Color.white);
-
-  // drawTile(
-  //   vec2(0), // center of screen
-  //   vec2(2), // size
-  //   playerModel, // frame and tileSize
-  // );
+  drawRect(G.center, G.size, G.cols.sky);
 }
 
 function gameRenderPost() {
   // called after objects are rendered
   // draw effects or hud that appear above all objects
 
-
-  if(G.player.crashed  ){
-    drawText('GAME OVER',
-      vec2(0, 0),
-      2,
-      new Color(1,0,0),
-      .5
-    )
+  if (G.player.crashed && Math.sin(time * 5) > 0) {
+    drawText("GAME OVER", vec2(0, 0), 2, G.cols.red, 0.5);
   }
 }
 
@@ -117,9 +110,9 @@ engineInit(
 
 class Player extends EngineObject {
   constructor(game) {
-    let size = 1.5,
-      frame = 5;
-    super(cameraPos, vec2(size), tile(playerFrame, game.tileSize * 2));
+    let size = playerSize,
+      frame = playerFrame;
+    super(cameraPos, vec2(size));
 
     // edge of screen left/right
     this.minX = (game.width - 2) / -2;
@@ -131,30 +124,16 @@ class Player extends EngineObject {
     // horizontal direction of player
     this.dir = 0;
 
-    this.setCollision(true,true,false,false)
+    this.frame = frame;
+    this.setCollision(true, true, false, false);
   }
 
   update() {
     super.update();
-    if(this.crashed) return;
+    this.currentFrame = this.frame;
+    // this.currentFrame = (Math.sin(time * 7) > 0) ? this.frame : this.frame+1;
 
-    // if (mouseWasPressed(0)||keyWasPressed('ArrowLeft') ){
-    //   this.velocity.x = (this.velocity.x === 0)
-    //   ? .1
-    //   : this.velocity.x * -.25
-    // }
-
-    // // gradually increase x speed
-    // if (this.velocity.x !== 0){
-    //   this.velocity.x *=1.05
-    // }
-
-    // if(keyIsDown('ArrowLeft')){
-    //   this.velocity.x -= .01
-    // }
-    // if(keyIsDown('ArrowRight')){
-    //   this.velocity.x += .01
-    // }
+    if (this.crashed) return;
 
     if (
       keyIsDown("ArrowLeft") ||
@@ -162,8 +141,14 @@ class Player extends EngineObject {
       keyIsDown("ArrowUp") ||
       keyIsDown("ArrowDown")
     ) {
+      particleEffect("dust", vec2(this.pos.x, this.pos.y - 0.9));
       this.velocity.x += 0.01 * keyDirection()["x"];
       this.velocity.y += 0.0075 * keyDirection()["y"];
+    }
+
+    if (keyWasPressed("KeyR")) {
+      console.log("R pressed!");
+      this.currentFrame++;
     }
 
     // clamp  speed
@@ -200,39 +185,49 @@ class Player extends EngineObject {
     }
   }
 
-  collideWithObject(o){
+  collideWithObject(o) {
     if (this.crashed) return;
-    G.speed=0;
+    G.speed = 0;
     this.velocity.x = 0;
     this.velocity.y = 0;
     this.crashed = true;
+    particleEffect("explosion", this.pos);
+    this.frame = this.frame + 12;
+  }
+
+  render() {
+    drawTile(
+      this.pos,
+      this.size,
+      tile(this.currentFrame, G.tileSize * 2),
+      undefined,
+      this.angle,
+    );
   }
 }
 
-
 class Enemy extends EngineObject {
-  constructor(game){
-    let x = game.width/2;
-    let y = (game.height/2) + 3;
-    let pos = vec2(rand(-x, x), y)
+  constructor(game) {
+    let x = game.width / 2;
+    let y = game.height / 2 + 3;
+    let pos = vec2(rand(-x, x), y);
 
     let frame = 8;
-    super(pos, vec2(.5), tile(frame, game.tileSize*2))
-    this.angle = 3.14
+    super(pos, vec2(0.5), tile(frame, game.tileSize * 2));
+    this.angle = Math.PI;
     this.game = game;
 
-    this.setCollision(true, false, false, false)
+    this.setCollision(true, false, false, false);
     this.drawSize = vec2(2);
   }
 
-
-  update(){
-    super.update()
+  update() {
+    super.update();
     this.pos.y -= this.game.speed;
 
     //remove object when past bottom of screen
-    if(this.pos.y < this.game.heigh / -2){
-      super.destroy()
+    if (this.pos.y < this.game.heigh / -2) {
+      super.destroy();
     }
   }
 }
