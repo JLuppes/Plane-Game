@@ -20,6 +20,7 @@ import {
   particleEffect,
   Sound,
   setTileDefaultBleed,
+  engineObjectsDestroy,
 } from "littlejsengine";
 
 const playerFrame = 5;
@@ -97,6 +98,8 @@ function gameInit() {
   // cameraScale = G.tileSize;
   setCameraScale(G.tileSize);
 
+  engineObjectsDestroy();
+
   G.player = new Player(G);
 
   G.speed = 0.1;
@@ -115,6 +118,14 @@ function gameUpdate() {
   // randomly generate enemies
   if (Math.random() > 0.99) {
     new Enemy(G);
+  }
+
+  if (
+    G.player.crashed &&
+    time > G.player.crashed + 2 &&
+    (mouseWasPressed(0) || keyWasPressed("Space"))
+  ) {
+    gameInit();
   }
 }
 
@@ -251,7 +262,7 @@ class Player extends EngineObject {
     G.speed = 0;
     this.velocity.x = 0;
     this.velocity.y = 0;
-    this.crashed = true;
+    this.crashed = time;
     particleEffect("explosion", this.pos);
     this.frame = this.frame + 12;
     G.sfx.hit.play(this.pos);
