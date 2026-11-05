@@ -191,15 +191,13 @@ class Player extends EngineObject {
 
     this.trail = [];
     this.trailCol = new Color(1, 1, 1, 0.25);
+
+    this.frameOptions = [9, 10, 11, 8];
+    this.skinNumber = 0;
+    this.currentFrame = this.frameOptions[0];
   }
 
-  update() {
-    super.update();
-    this.currentFrame = this.frame;
-    // this.currentFrame = (Math.sin(time * 7) > 0) ? this.frame : this.frame+1;
-
-    if (this.crashed) return;
-
+  handleInput() {
     if (
       keyIsDown("ArrowLeft") ||
       keyIsDown("ArrowRight") ||
@@ -213,9 +211,24 @@ class Player extends EngineObject {
     }
 
     if (keyWasPressed("KeyR")) {
-      console.log("R pressed!");
-      this.currentFrame++;
+      this.changeSkin();
     }
+  }
+
+  changeSkin(newSkin) {
+    newSkin ? (this.skinNumber = newSkin) : ++this.skinNumber;
+    if (this.skinNumber > this.frameOptions.length - 1) this.skinNumber = 0;
+    this.currentFrame = this.frameOptions[this.skinNumber];
+  }
+
+  update() {
+    super.update();
+    // this.currentFrame = this.frame;
+    // this.currentFrame = (Math.sin(time * 7) > 0) ? this.frame : this.frame+1;
+
+    if (this.crashed) return;
+
+    this.handleInput();
 
     // clamp  speed
     this.velocity.x = clamp(this.velocity.x, -0.35, 0.35);
