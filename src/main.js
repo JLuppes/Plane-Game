@@ -29,12 +29,13 @@ const playerSize = 2.5;
 // setTileDefaultPadding(1);
 
 const G = {
+  score: 0,
   // Logical grid size (in tiles)
   width: 20,
   height: 30,
   // Size of one tile in screen pixels
   tileSize: 16,
-  tiles: ["/ships.png"],
+  tiles: ["/ships.png", "/tiles.png"],
   cols: {
     white: new Color().setHex("#ffffff"),
     red: new Color().setHex("#ff0000"),
@@ -74,6 +75,7 @@ const G = {
 // called once after the engine starts up
 function gameInit() {
   // setup the game
+  G.score = 0;
 
   // Compute the fixed canvas size in screen pixels
   const gameSize = vec2(G.width * G.tileSize, G.height * G.tileSize);
@@ -106,6 +108,10 @@ function gameUpdate() {
   // called every frame at 60 frames per second
   // handle input and update the game state
 
+  G.score += G.speed / 5;
+
+  G.speed += G.speed * 0.0001;
+
   // randomly generate enemies
   if (Math.random() > 0.99) {
     new Enemy(G);
@@ -125,6 +131,18 @@ function gameRender() {
 function gameRenderPost() {
   // called after objects are rendered
   // draw effects or hud that appear above all objects
+
+  let score = Math.floor(G.score).toString().padStart(4, "0");
+
+  let startPos = cameraPos.copy().add(vec2(-3, -13));
+  score.split("").forEach((num, index) => {
+    num = parseInt(num, 10);
+    drawTile(
+      startPos.add(vec2(index * 1.75, 0)),
+      vec2(2.5),
+      tile(19 + (num > 4 ? 7 + num : num), G.tileSize, 1),
+    );
+  });
 
   if (G.player.crashed && Math.sin(time * 5) > 0) {
     drawText("GAME OVER", vec2(0, 0), 2, G.cols.red, 0.5);
@@ -226,7 +244,6 @@ class Player extends EngineObject {
       t.pos.y -= G.speed;
       return t.pos.y >= -G.height / 2;
     });
-    console.log(this.trail);
   }
 
   collideWithObject(o) {
