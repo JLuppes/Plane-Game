@@ -195,6 +195,9 @@ class Player extends EngineObject {
     this.frameOptions = [9, 10, 11, 8];
     this.skinNumber = 0;
     this.currentFrame = this.frameOptions[0];
+
+    this.reloadTime = 0.2;
+    this.lastShot = time;
   }
 
   handleInput() {
@@ -212,6 +215,23 @@ class Player extends EngineObject {
 
     if (keyWasPressed("KeyR")) {
       this.changeSkin();
+    }
+
+    if (keyIsDown("Space")) {
+      this.shoot();
+    }
+  }
+
+  shoot() {
+    if (time - this.lastShot > this.reloadTime) {
+      console.log("Pew!");
+      particleEffect("explosion", vec2(this.pos.x - 0.6, this.pos.y + 0.8), {
+        scale: 0.3,
+      });
+      particleEffect("explosion", vec2(this.pos.x + 0.6, this.pos.y + 0.8), {
+        scale: 0.3,
+      });
+      this.lastShot = time;
     }
   }
 
