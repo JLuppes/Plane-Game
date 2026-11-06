@@ -224,7 +224,7 @@ class Player extends EngineObject {
 
   shoot() {
     if (time - this.lastShot > this.reloadTime) {
-      console.log("Pew!");
+      LOG("Pew!");
       particleEffect("explosion", vec2(this.pos.x - 0.6, this.pos.y + 0.8), {
         scale: 0.3,
       });
@@ -236,9 +236,9 @@ class Player extends EngineObject {
   }
 
   changeSkin(newSkin) {
-    newSkin ? (this.skinNumber = newSkin) : ++this.skinNumber;
-    if (this.skinNumber > this.frameOptions.length - 1) this.skinNumber = 0;
+    this.skinNumber = ++this.skinNumber % this.frameOptions.length;
     this.currentFrame = this.frameOptions[this.skinNumber];
+    LOG("Skin number now: " + this.skinNumber);
   }
 
   update() {
