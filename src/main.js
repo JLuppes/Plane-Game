@@ -21,6 +21,7 @@ import {
   Sound,
   setTileDefaultBleed,
   engineObjectsDestroy,
+  particleEffectsLoad,
 } from "littlejsengine";
 
 const playerFrame = 5;
@@ -37,6 +38,7 @@ const G = {
   // Size of one tile in screen pixels
   tileSize: 16,
   tiles: ["/ships.png", "/tiles.png"],
+  slowdownFactor: 0.03,
   cols: {
     white: new Color().setHex("#ffffff"),
     red: new Color().setHex("#ff0000"),
@@ -70,9 +72,39 @@ const G = {
   },
 };
 
+// const wave = new ParticleEmitter(
+//     vec2(),                              // pos
+//     0,                                   // angle
+//     0,                                   // emitSize
+//     0,                                   // emitTime
+//     60,                                  // emitRate
+//     PI,                                  // emitConeAngle
+//     particleEffectShapeTile('soft'),     // tileInfo
+//     hsl(0.592, 1, 0.6, 1),               // colorStartA
+//     hsl(0.617, 1, 0.651, 1),             // colorStartB
+//     hsl(0.621, 1, 0.5, 0.01),            // colorEndA
+//     hsl(0.676, 1, 0.4, 0.01),            // colorEndB
+//     2,                                   // particleTime
+//     0.4,                                 // sizeStart
+//     2.95,                                // sizeEnd
+//     0,                                   // speed
+//     0,                                   // angleSpeed
+//     1,                                   // damping
+//     1,                                   // angleDamping
+//     0,                                   // gravityScale
+//     PI,                                  // particleConeAngle
+//     0.05,                                // fadeRate
+//     0.2,                                 // randomness
+//     false,                               // collideLevel
+//     false,                               // additive
+//     true                                 // randomColorLinear
+// );
+// wave.trailScale = 15.2;
+
 // Particles: https://killedbyapixel.github.io/LittleJS/examples/particles/
 // Sounds: https://killedbyapixel.github.io/ZzFX/
 
+particleEffectsLoad("particleEffects.json");
 // called once after the engine starts up
 function gameInit() {
   // setup the game
@@ -209,9 +241,10 @@ class Player extends EngineObject {
     ) {
       particleEffect("dust", vec2(this.pos.x, this.pos.y - 0.9));
       G.sfx.fly.play(this.pos);
-      this.velocity.x += 0.01 * keyDirection()["x"];
-      this.velocity.y += 0.0075 * keyDirection()["y"];
     }
+
+    this.velocity.x += 0.01 * keyDirection()["x"];
+    this.velocity.y += 0.0075 * keyDirection()["y"];
 
     if (keyWasPressed("KeyR")) {
       this.changeSkin();
@@ -225,10 +258,10 @@ class Player extends EngineObject {
   shoot() {
     if (time - this.lastShot > this.reloadTime) {
       LOG("Pew!");
-      particleEffect("explosion", vec2(this.pos.x - 0.6, this.pos.y + 0.8), {
+      particleEffect("muzzle", vec2(this.pos.x - 0.6, this.pos.y + 0.55), {
         scale: 0.3,
       });
-      particleEffect("explosion", vec2(this.pos.x + 0.6, this.pos.y + 0.8), {
+      particleEffect("muzzle", vec2(this.pos.x + 0.6, this.pos.y + 0.55), {
         scale: 0.3,
       });
       this.lastShot = time;
@@ -249,6 +282,10 @@ class Player extends EngineObject {
     if (this.crashed) return;
 
     this.handleInput();
+
+    // gradual slowdown
+    this.velocity.x = this.velocity.x / (1 + G.slowdownFactor);
+    this.velocity.y = this.velocity.y / (1 + G.slowdownFactor);
 
     // clamp  speed
     this.velocity.x = clamp(this.velocity.x, -0.35, 0.35);
@@ -283,7 +320,7 @@ class Player extends EngineObject {
       this.pos.y -= 0.01;
     }
 
-    this.trail.push({ pos: this.pos.copy(), angle: this.angle });
+    this.trail.push(particleEffect("wave", this.pos.copy()));
     this.trail = this.trail.filter((t) => {
       t.pos.y -= G.speed;
       return t.pos.y >= -G.height / 2;
@@ -302,9 +339,6 @@ class Player extends EngineObject {
   }
 
   render() {
-    this.trail.forEach((t) => {
-      drawTile(t.pos, vec2(2), tile(6, G.tileSize), this.trailCol, t.angle);
-    });
     drawTile(
       this.pos,
       this.size,
