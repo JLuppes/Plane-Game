@@ -71,40 +71,11 @@ const G = {
     ]),
   },
 };
-
-// const wave = new ParticleEmitter(
-//     vec2(),                              // pos
-//     0,                                   // angle
-//     0,                                   // emitSize
-//     0,                                   // emitTime
-//     60,                                  // emitRate
-//     PI,                                  // emitConeAngle
-//     particleEffectShapeTile('soft'),     // tileInfo
-//     hsl(0.592, 1, 0.6, 1),               // colorStartA
-//     hsl(0.617, 1, 0.651, 1),             // colorStartB
-//     hsl(0.621, 1, 0.5, 0.01),            // colorEndA
-//     hsl(0.676, 1, 0.4, 0.01),            // colorEndB
-//     2,                                   // particleTime
-//     0.4,                                 // sizeStart
-//     2.95,                                // sizeEnd
-//     0,                                   // speed
-//     0,                                   // angleSpeed
-//     1,                                   // damping
-//     1,                                   // angleDamping
-//     0,                                   // gravityScale
-//     PI,                                  // particleConeAngle
-//     0.05,                                // fadeRate
-//     0.2,                                 // randomness
-//     false,                               // collideLevel
-//     false,                               // additive
-//     true                                 // randomColorLinear
-// );
-// wave.trailScale = 15.2;
+particleEffectsLoad("particleEffects.json");
 
 // Particles: https://killedbyapixel.github.io/LittleJS/examples/particles/
 // Sounds: https://killedbyapixel.github.io/ZzFX/
 
-particleEffectsLoad("particleEffects.json");
 // called once after the engine starts up
 function gameInit() {
   // setup the game
@@ -215,14 +186,12 @@ class Player extends EngineObject {
     this.minY = (game.height - 2) / -2;
     this.maxY = (game.height - 2) / 2;
 
-    // horizontal direction of player
-    this.dir = 0;
-
     this.frame = frame;
     this.setCollision(true, true, false, false);
 
     this.trail = [];
-    this.trailCol = new Color(1, 1, 1, 0.25);
+    this.muzzles = [];
+    this.smoke = [];
 
     this.frameOptions = [9, 10, 11, 8];
     this.skinNumber = 0;
@@ -276,8 +245,6 @@ class Player extends EngineObject {
 
   update() {
     super.update();
-    // this.currentFrame = this.frame;
-    // this.currentFrame = (Math.sin(time * 7) > 0) ? this.frame : this.frame+1;
 
     if (this.crashed) return;
 
@@ -291,12 +258,10 @@ class Player extends EngineObject {
     this.velocity.x = clamp(this.velocity.x, -0.35, 0.35);
     this.velocity.y = clamp(this.velocity.y, -0.35, 0.35);
 
+    // update player angle to match horizontal speed
     this.angle = this.velocity.x;
 
-    // // change direction if player about to go off screen
-    // if (this.pos.x <= this.minX || this.pos.x >= this.maxX){
-    //   this.velocity.x *= -1
-    // }
+    // change direction if player about to go off screen
 
     if (this.pos.x <= this.minX || this.pos.x >= this.maxX) {
       this.velocity.x = 0;
@@ -322,6 +287,9 @@ class Player extends EngineObject {
 
     this.trail.push(particleEffect("wave", this.pos.copy()));
     this.trail = this.trail.filter((t) => {
+      if (G.player.crashed) {
+        // pause
+      }
       t.pos.y -= G.speed;
       return t.pos.y >= -G.height / 2;
     });
