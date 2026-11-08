@@ -446,6 +446,7 @@ class PowerUp extends EngineObject {
     let y = game.height / 2 + 3;
     let pos = vec2(rand(-x, x), y);
     let frame = 24;
+    let pointValue = 100;
     super(pos, vec2(0.8), tile(frame, game.tileSize, G.tileSheets["general"]));
     this.angle = Math.PI;
     this.game = game;
@@ -455,6 +456,7 @@ class PowerUp extends EngineObject {
     this.speedFactor = 1;
     this.gameType = "powerUp";
     this.gameSource = "game";
+    this.pointValue = pointValue;
   }
 
   collideWithObject(o) {
@@ -467,6 +469,7 @@ class PowerUp extends EngineObject {
 
   pickedUp() {
     particleEffect("magic", this.pos).emitTime = 0.1;
+    G.score += this.pointValue;
     super.destroy();
   }
 
