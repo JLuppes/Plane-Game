@@ -37,6 +37,7 @@ const G = {
   height: 30,
   // Size of one tile in screen pixels
   tileSize: 16,
+  tileSheets: { ships: 0, general: 1 },
   tiles: ["/ships.png", "/tiles.png"],
   slowdownFactor: 0.03,
   cols: {
@@ -154,7 +155,7 @@ function gameRenderPost() {
     drawTile(
       startPos.add(vec2(index * 1.75, 0)),
       vec2(2.5),
-      tile(19 + (num > 4 ? 7 + num : num), G.tileSize, 1),
+      tile(19 + (num > 4 ? 7 + num : num), G.tileSize, G.tileSheets["general"]),
     );
   });
 
@@ -224,9 +225,14 @@ class Player extends EngineObject {
     }
   }
 
+  bullets = [];
+
   shoot() {
     if (time - this.lastShot > this.reloadTime) {
       LOG("Pew!");
+
+      this.bullets.push(createBullet(this));
+
       particleEffect("muzzle", vec2(this.pos.x - 0.6, this.pos.y + 0.55), {
         scale: 0.3,
       });
@@ -241,6 +247,10 @@ class Player extends EngineObject {
     this.skinNumber = ++this.skinNumber % this.frameOptions.length;
     this.currentFrame = this.frameOptions[this.skinNumber];
     LOG("Skin number now: " + this.skinNumber);
+  }
+
+  gainScore(amount) {
+    G.score += amount;
   }
 
   update() {
@@ -296,25 +306,34 @@ class Player extends EngineObject {
   }
 
   collideWithObject(o) {
+    LOG("Player collided with: ");
+    LOG(o);
+
     if (this.crashed) return;
-    G.speed = 0;
-    this.velocity.x = 0;
-    this.velocity.y = 0;
-    this.crashed = time;
-    particleEffect("explosion", this.pos);
-    this.frame = this.frame + 12;
-    G.sfx.hit.play(this.pos);
+    if (o.gameType == "enemy") {
+      G.speed = 0;
+      this.velocity.x = 0;
+      this.velocity.y = 0;
+      this.crashed = time;
+      particleEffect("explosion", this.pos);
+      this.frame = this.frame + 12;
+      G.sfx.hit.play(this.pos);
+    }
   }
 
   render() {
     drawTile(
       this.pos,
       this.size,
-      tile(this.currentFrame, G.tileSize * 2),
+      tile(this.currentFrame, G.tileSize * 2, G.tileSheets["ships"]),
       undefined,
       this.angle,
     );
   }
+}
+
+function createBullet(source) {
+  return new Bullet(G, source);
 }
 
 class Enemy extends EngineObject {
@@ -322,23 +341,95 @@ class Enemy extends EngineObject {
     let x = game.width / 2;
     let y = game.height / 2 + 3;
     let pos = vec2(rand(-x, x), y);
+    let startHealth = 2;
+    let scoreValue = 10;
 
     let frame = 8;
-    super(pos, vec2(0.5), tile(frame, game.tileSize * 2));
+    super(
+      pos,
+      vec2(0.5),
+      tile(frame, game.tileSize * 2, G.tileSheets["ships"]),
+    );
     this.angle = Math.PI;
     this.game = game;
 
     this.setCollision(true, false, false, false);
     this.drawSize = vec2(2);
+    this.gameType = "enemy";
+    this.health = startHealth;
+    this.dead = false;
+    this.scoreValue = scoreValue;
   }
 
   update() {
     super.update();
     this.pos.y -= this.game.speed;
 
+    if (this.crashed) return;
+
     //remove object when past bottom of screen
     if (this.pos.y < this.game.heigh / -2) {
       super.destroy();
     }
+  }
+  collideWithObject(o) {
+    if (o.gameType == "bullet" && o.gameSource == "player") {
+      this.takeDamage(o.damage);
+    }
+  }
+
+  takeDamage(amount) {
+    this.health -= amount;
+    particleEffect("sparks", this.pos).emitTime = 0.1;
+    if (this.health <= 0) {
+      this.dead = true;
+      this.explode();
+      G.player.gainScore(this.scoreValue);
+    }
+  }
+
+  explode() {
+    LOG("Enemy Exploded: " + this);
+    particleEffect("explosion", this.pos.copy());
+    super.destroy();
+  }
+}
+
+class Bullet extends EngineObject {
+  constructor(game, source) {
+    let x = game.width / 2;
+    let y = game.height / 2 + 3;
+    let sourcePos = source.pos.copy();
+    let pos = vec2(sourcePos.x, sourcePos.y + 0.2);
+    let angle = source.angle;
+    let bulletSpeed = 1;
+    let bulletDamage = 1;
+
+    let frame = 1;
+    super(pos, vec2(1.8), tile(frame, game.tileSize, G.tileSheets["general"]));
+    this.angle = Math.PI;
+    this.game = game;
+
+    this.setCollision(true, true, false, false);
+    this.drawSize = vec2(2);
+    this.speed = vec2(Math.sin(angle), Math.cos(angle));
+    this.gameType = "bullet";
+    this.gameSource = "player";
+    this.damage = bulletDamage;
+  }
+
+  collideWithObject(o) {
+    super.collideWithObject(o);
+
+    if (o.gameType == "enemy") {
+      super.destroy();
+    }
+  }
+
+  update() {
+    super.update();
+
+    this.pos.x += this.speed.x;
+    this.pos.y += this.speed.y;
   }
 }
