@@ -124,6 +124,11 @@ function gameUpdate() {
     new Enemy(G);
   }
 
+  // randomly generate powerups
+  if (Math.random() > 0.99) {
+    new PowerUp(G);
+  }
+
   if (
     G.player.crashed &&
     time > G.player.crashed + 2 &&
@@ -200,6 +205,7 @@ class Player extends EngineObject {
 
     this.reloadTime = 0.2;
     this.lastShot = time;
+    this.gameType = "player";
   }
 
   handleInput() {
@@ -431,5 +437,41 @@ class Bullet extends EngineObject {
 
     this.pos.x += this.speed.x;
     this.pos.y += this.speed.y;
+  }
+}
+
+class PowerUp extends EngineObject {
+  constructor(game, source) {
+    let x = game.width / 2;
+    let y = game.height / 2 + 3;
+    let pos = vec2(rand(-x, x), y);
+    let frame = 24;
+    super(pos, vec2(0.8), tile(frame, game.tileSize, G.tileSheets["general"]));
+    this.angle = Math.PI;
+    this.game = game;
+
+    this.setCollision(true, true, false, false);
+    this.drawSize = vec2(2);
+    this.speedFactor = 1;
+    this.gameType = "powerUp";
+    this.gameSource = "game";
+  }
+
+  collideWithObject(o) {
+    super.collideWithObject(o);
+
+    if (o.gameType == "player") {
+      this.pickedUp();
+    }
+  }
+
+  pickedUp() {
+    particleEffect("magic", this.pos).emitTime = 0.1;
+    super.destroy();
+  }
+
+  update() {
+    super.update();
+    this.pos.y -= this.speedFactor * G.speed;
   }
 }
