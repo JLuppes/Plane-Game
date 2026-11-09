@@ -1,0 +1,4 @@
+[
+  { "name": "1-up", "priority": 1, "frame": 24 },
+  { "name": "Powershot", "priority": 2, "frame": 25 }
+]

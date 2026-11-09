@@ -22,12 +22,15 @@ import {
   setTileDefaultBleed,
   engineObjectsDestroy,
   particleEffectsLoad,
+  ParticleEmitter,
+  fetchJSON,
+  Timer,
 } from "littlejsengine";
 
 const playerFrame = 5;
 const playerSize = 2.5;
 
-// each tile in tiles.png has a 1 pixel border, which stops texture bleeding
+const listOfPowerups = await fetchJSON("./data/powerups/default.json");
 // setTileDefaultPadding(1);
 
 const G = {
@@ -40,6 +43,9 @@ const G = {
   tileSheets: { ships: 0, general: 1 },
   tiles: ["/ships.png", "/tiles.png"],
   slowdownFactor: 0.03,
+  powerupCooldown: 2.0,
+  currentHeldPowerUp: {},
+  currentActivePowerUps: [],
   cols: {
     white: new Color().setHex("#ffffff"),
     red: new Color().setHex("#ff0000"),
@@ -81,6 +87,9 @@ particleEffectsLoad("particleEffects.json");
 function gameInit() {
   // setup the game
   G.score = 0;
+
+  G.powerupTimer = new Timer(G.powerupCooldown);
+  G.currentHeldPowerUp = {};
 
   // Compute the fixed canvas size in screen pixels
   const gameSize = vec2(G.width * G.tileSize, G.height * G.tileSize);
@@ -125,8 +134,10 @@ function gameUpdate() {
   }
 
   // randomly generate powerups
-  if (Math.random() > 0.99) {
-    new PowerUp(G);
+  if (Math.random() > 0.9 && G.powerupTimer.elapsed()) {
+    const powerUpChoice = Math.floor(Math.random() * listOfPowerups.length);
+    new PowerUp(G, listOfPowerups[powerUpChoice]);
+    G.powerupTimer.set(G.powerupCooldown);
   }
 
   if (
@@ -152,13 +163,23 @@ function gameRenderPost() {
   // called after objects are rendered
   // draw effects or hud that appear above all objects
 
-  let score = Math.floor(G.score).toString().padStart(4, "0");
+  // Currently Held Powerup UI Display
+  let powerupFrameStartPos = cameraPos.copy().add(vec2(7, -13));
+  drawTile(
+    powerupFrameStartPos,
+    vec2(2.5),
+    tile(27, G.tileSize, G.tileSheets["general"]),
+  );
+  if (G.currentHeldPowerUp.tileData) {
+    drawTile(powerupFrameStartPos, vec2(1.5), G.currentHeldPowerUp.tileData);
+  }
 
-  let startPos = cameraPos.copy().add(vec2(-3, -13));
+  let score = Math.floor(G.score).toString().padStart(4, "0");
+  let scoreStartPos = cameraPos.copy().add(vec2(-3, -13));
   score.split("").forEach((num, index) => {
     num = parseInt(num, 10);
     drawTile(
-      startPos.add(vec2(index * 1.75, 0)),
+      scoreStartPos.add(vec2(index * 1.75, 0)),
       vec2(2.5),
       tile(19 + (num > 4 ? 7 + num : num), G.tileSize, G.tileSheets["general"]),
     );
@@ -170,6 +191,8 @@ function gameRenderPost() {
 }
 
 // fires up LittleJS with all necessary functions and tiles
+
+await particleEffectsLoad("particleEffects.json");
 engineInit(
   gameInit,
   gameUpdate,
@@ -441,35 +464,46 @@ class Bullet extends EngineObject {
 }
 
 class PowerUp extends EngineObject {
-  constructor(game, source) {
+  constructor(game, powerupData) {
     let x = game.width / 2;
     let y = game.height / 2 + 3;
     let pos = vec2(rand(-x, x), y);
-    let frame = 24;
-    let pointValue = 100;
-    super(pos, vec2(0.8), tile(frame, game.tileSize, G.tileSheets["general"]));
-    this.angle = Math.PI;
-    this.game = game;
+    let frame = powerupData.frame ? powerupData.frame : 24;
+    let defaultPointValue = 100;
+    let spriteSheet = powerupData.spriteSheet
+      ? powerupData.spriteSheet
+      : "general";
+    let tileData = tile(frame, game.tileSize, G.tileSheets[spriteSheet]);
 
+    super(pos, vec2(0.8), tileData);
+
+    this.game = game;
     this.setCollision(true, true, false, false);
-    this.drawSize = vec2(2);
-    this.speedFactor = 1;
     this.gameType = "powerUp";
     this.gameSource = "game";
-    this.pointValue = pointValue;
+
+    this.powerupData = powerupData;
+    this.tileData = tileData;
+    this.name = powerupData.name ? powerupData.name : "Powerup";
+    this.angle = powerupData.angle ? powerupData.angle : 0;
+    this.drawSize = powerupData.drawSize ? vec2(powerupData.drawSize) : vec2(2);
+    this.speedFactor = powerupData.speedFactor ? powerupData.speedFactor : 1;
+    this.pointValue = powerupData.pointValue
+      ? powerupData.pointValue
+      : defaultPointValue;
   }
 
   collideWithObject(o) {
-    super.collideWithObject(o);
-
     if (o.gameType == "player") {
       this.pickedUp();
     }
   }
 
   pickedUp() {
+    console.log("Picked up Powerup: " + this.name);
     particleEffect("magic", this.pos).emitTime = 0.1;
     G.score += this.pointValue;
+    G.currentHeldPowerUp = this;
     super.destroy();
   }
 
