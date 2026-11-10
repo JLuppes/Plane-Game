@@ -49,6 +49,7 @@ const G = {
   currentActiveEffects: [],
   playerLives: 1,
   playerDamage: 1,
+  invincibleTime: 3,
   cols: {
     white: new Color().setHex("#ffffff"),
     red: new Color().setHex("#ff0000"),
@@ -89,7 +90,10 @@ const G = {
 function gameInit() {
   // setup the game
   G.score = 0;
+  G.playerHealth = 1;
   G.playerLives = 2;
+
+  G.invincibleTimer = new Timer(0);
 
   G.powerupTimer = new Timer(G.powerupCooldown);
   G.currentHeldPowerUp = {};
@@ -401,17 +405,40 @@ class Player extends EngineObject {
 
     if (this.crashed) return;
     if (o.gameType == "enemy") {
-      G.speed = 0;
-      this.velocity.x = 0;
-      this.velocity.y = 0;
-      this.crashed = time;
-      particleEffect("explosion", this.pos);
-      this.frame = this.frame + 12;
-      G.sfx.hit.play(this.pos);
+      this.takeHit(1);
+    }
+  }
+  takeHit(damageAmount = 1) {
+    if (G.invincibleTimer.elapsed()) {
+      G.playerHealth -= damageAmount;
+      if (G.playerHealth <= 0) {
+        this.loseLife();
+      }
+      particleEffect("sparks", this.pos).emitTime = 0.1;
     }
   }
 
-  render() {
+  loseLife() {
+    G.playerLives--;
+    particleEffect("explosion", this.pos).emitTime = 0.1;
+    if (G.playerLives < 0) {
+      this.die();
+    } else {
+      G.invincibleTimer.set(G.invincibleTime);
+    }
+  }
+
+  die() {
+    G.speed = 0;
+    this.velocity.x = 0;
+    this.velocity.y = 0;
+    this.crashed = time;
+    particleEffect("explosion", this.pos);
+    this.frame = this.frame + 12;
+    G.sfx.hit.play(this.pos);
+  }
+
+  drawShip() {
     drawTile(
       this.pos,
       this.size,
@@ -419,6 +446,12 @@ class Player extends EngineObject {
       undefined,
       this.angle,
     );
+  }
+
+  render() {
+    if (G.invincibleTimer.elapsed() || Math.sin(time * 24) > 0) {
+      this.drawShip();
+    }
   }
 }
 
@@ -493,7 +526,7 @@ class Bullet extends EngineObject {
     let pos = vec2(sourcePos.x, sourcePos.y + 0.2);
     let angle = source.angle;
     let bulletSpeed = 1;
-    let bulletDamage = 1;
+    let bulletDamage = G.playerDamage;
 
     let frame = 1;
     super(pos, vec2(1.8), tile(frame, game.tileSize, G.tileSheets["general"]));
@@ -501,7 +534,7 @@ class Bullet extends EngineObject {
     this.game = game;
 
     this.setCollision(true, true, false, false);
-    this.drawSize = vec2(2);
+    this.drawSize = vec2(2).multiply(vec2(bulletDamage));
     this.speed = vec2(Math.sin(angle), Math.cos(angle));
     this.gameType = "bullet";
     this.gameSource = "player";
@@ -620,6 +653,7 @@ class PowerUp extends EngineObject {
         if (overwrites[key + "-original"]) {
           console.log("IF");
           G[key] = overwrites[key + "-original"];
+          delete G[key + "-original"];
           console.log(`Game property "${key}" set to: ${G[key]}`);
         } else {
           console.log("ELSE");
@@ -630,7 +664,21 @@ class PowerUp extends EngineObject {
   }
 
   removeAdditions() {
-    console.log("Removing addition... TBD");
+    console.log("Removing addition:");
+    if (this.powerupData.gamePropertyAdditions) {
+      for (let key in this.powerupData.gamePropertyAdditions) {
+        let keyData = this.powerupData.gamePropertyAdditions[key];
+        console.log(
+          `Powerup "${this.name}" removing addition for key "${key}": ${this.powerupData.gamePropertyAdditions[key]}`,
+        );
+        if (G[key] != null) {
+          G[key] = G[key] - keyData;
+          console.log(`Game property "${key}" set to: ${G[key]}`);
+        } else {
+          console.log("No key found with name: " + key);
+        }
+      }
+    }
   }
 
   applyAdditions() {
