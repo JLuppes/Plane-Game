@@ -1,4 +1,27 @@
 [
-  { "name": "1-up", "priority": 1, "frame": 24 },
-  { "name": "Powershot", "priority": 2, "frame": 25 }
+  {
+    "name": "1-up",
+    "priority": 1,
+    "frame": 24,
+    "spriteSheet": "general",
+    "gamePropertyOverwrites": {},
+    "gamePropertyAdditions": { "playerLives": 1 }
+  },
+  {
+    "name": "Powershot",
+    "priority": 2,
+    "frame": 25,
+    "spriteSheet": "general",
+    "gamePropertyOverwrites": {},
+    "gamePropertyAdditions": { "playerDamage": 1 }
+  },
+  {
+    "name": "SlowMo",
+    "priority": 2,
+    "frame": 28,
+    "spriteSheet": "general",
+    "duration": 5,
+    "gamePropertyOverwrites": { "speed": 0.05 },
+    "gamePropertyAdditions": {}
+  }
 ]

@@ -25,6 +25,7 @@ import {
   ParticleEmitter,
   fetchJSON,
   Timer,
+  mouseIsDown,
 } from "littlejsengine";
 
 const playerFrame = 5;
@@ -45,7 +46,9 @@ const G = {
   slowdownFactor: 0.03,
   powerupCooldown: 2.0,
   currentHeldPowerUp: {},
-  currentActivePowerUps: [],
+  currentActiveEffects: [],
+  playerLives: 1,
+  playerDamage: 1,
   cols: {
     white: new Color().setHex("#ffffff"),
     red: new Color().setHex("#ff0000"),
@@ -78,7 +81,6 @@ const G = {
     ]),
   },
 };
-particleEffectsLoad("particleEffects.json");
 
 // Particles: https://killedbyapixel.github.io/LittleJS/examples/particles/
 // Sounds: https://killedbyapixel.github.io/ZzFX/
@@ -87,6 +89,7 @@ particleEffectsLoad("particleEffects.json");
 function gameInit() {
   // setup the game
   G.score = 0;
+  G.playerLives = 2;
 
   G.powerupTimer = new Timer(G.powerupCooldown);
   G.currentHeldPowerUp = {};
@@ -147,6 +150,45 @@ function gameUpdate() {
   ) {
     gameInit();
   }
+
+  if (G.currentActiveEffects.length > 0) {
+    for (let thisEffect in G.currentActiveEffects) {
+      const currentEffect = G.currentActiveEffects[thisEffect];
+      if (!currentEffect.effectActive) {
+        console.log(
+          "Activating effect: " + G.currentActiveEffects[currentEffect],
+        );
+        currentEffect.effectActive = true;
+        currentEffect.timer = new Timer(
+          currentEffect.powerupData.duration
+            ? currentEffect.powerupData.duration
+            : 3,
+        );
+        currentEffect.startUp();
+      }
+    }
+
+    const oldEffect = G.currentActiveEffects.filter((effect) =>
+      effect.timer.elapsed(),
+    );
+    for (const thisOldeEffect in oldEffect) {
+      oldEffect[thisOldeEffect].shutDown();
+    }
+
+    G.currentActiveEffects = G.currentActiveEffects.filter(
+      (effect) => !effect.timer.elapsed(),
+    );
+
+    console.log(
+      "Remaining effects: " +
+        (G.currentActiveEffects.length > 0 ? G.currentActiveEffects : "None"),
+    );
+
+    for (let thisEffect in G.currentActiveEffects) {
+      console.log("Active effect: " + G.currentActiveEffects[thisEffect].name);
+      console.log(G.currentActiveEffects[thisEffect]);
+    }
+  }
 }
 
 function gameUpdatePost() {
@@ -174,8 +216,9 @@ function gameRenderPost() {
     drawTile(powerupFrameStartPos, vec2(1.5), G.currentHeldPowerUp.tileData);
   }
 
+  // Score UI Display
   let score = Math.floor(G.score).toString().padStart(4, "0");
-  let scoreStartPos = cameraPos.copy().add(vec2(-3, -13));
+  let scoreStartPos = cameraPos.copy().add(vec2(-8, 13));
   score.split("").forEach((num, index) => {
     num = parseInt(num, 10);
     drawTile(
@@ -185,6 +228,18 @@ function gameRenderPost() {
     );
   });
 
+  // Lives Display
+  let lives = Math.floor(G.playerLives);
+  let livesStartPos = cameraPos.copy().add(vec2(-8, -13));
+  for (let i = 0; i < lives; i++) {
+    drawTile(
+      livesStartPos.add(vec2(i * 1.75, 0)),
+      vec2(2.5),
+      tile(G.player.currentFrame, G.tileSize * 2, G.tileSheets["ships"]),
+    );
+  }
+
+  // Game Over Screen
   if (G.player.crashed && Math.sin(time * 5) > 0) {
     drawText("GAME OVER", vec2(0, 0), 2, G.cols.red, 0.5);
   }
@@ -249,8 +304,14 @@ class Player extends EngineObject {
       this.changeSkin();
     }
 
-    if (keyIsDown("Space")) {
+    if (keyIsDown("Space") || mouseIsDown(0)) {
       this.shoot();
+    }
+
+    if (keyWasPressed("KeyE")) {
+      if (G.currentHeldPowerUp.usePowerup) {
+        G.currentHeldPowerUp.usePowerup();
+      }
     }
   }
 
@@ -481,6 +542,7 @@ class PowerUp extends EngineObject {
     this.setCollision(true, true, false, false);
     this.gameType = "powerUp";
     this.gameSource = "game";
+    this.effectActive = false;
 
     this.powerupData = powerupData;
     this.tileData = tileData;
@@ -505,6 +567,87 @@ class PowerUp extends EngineObject {
     G.score += this.pointValue;
     G.currentHeldPowerUp = this;
     super.destroy();
+  }
+
+  usePowerup() {
+    if (this.powerupData.duration > 0) {
+      G.currentActiveEffects.push(this);
+    } else {
+      this.applyOverwrites();
+      this.applyAdditions();
+      super.destroy();
+    }
+    G.currentHeldPowerUp = {};
+  }
+
+  applyOverwrites() {
+    if (this.powerupData.gamePropertyOverwrites) {
+      for (let key in this.powerupData.gamePropertyOverwrites) {
+        let keyDataOriginal = G[key];
+        this.powerupData.gamePropertyOverwrites[key + "-original"] =
+          keyDataOriginal;
+        let keyData = this.powerupData.gamePropertyOverwrites[key];
+        console.log(
+          `Powerup "${this.name}" found overwrite for key "${key}": ${keyData}`,
+        );
+        if (G[key] != null) {
+          G[key] = keyData;
+          console.log(`Game property "${key}" set to: ${G[key]}`);
+        } else {
+          console.log("No key found with name: " + key);
+        }
+      }
+    }
+  }
+
+  startUp() {
+    this.applyOverwrites();
+    this.applyAdditions();
+  }
+
+  shutDown() {
+    this.removeOverwrites();
+    this.removeAdditions();
+    this.destroy();
+  }
+
+  removeOverwrites() {
+    const overwrites = this.powerupData.gamePropertyOverwrites;
+    console.log("Removing overwrites:");
+    console.log(overwrites);
+    if (overwrites) {
+      for (let key in overwrites) {
+        if (overwrites[key + "-original"]) {
+          console.log("IF");
+          G[key] = overwrites[key + "-original"];
+          console.log(`Game property "${key}" set to: ${G[key]}`);
+        } else {
+          console.log("ELSE");
+          console.log("Original value not found for key: " + key);
+        }
+      }
+    }
+  }
+
+  removeAdditions() {
+    console.log("Removing addition... TBD");
+  }
+
+  applyAdditions() {
+    if (this.powerupData.gamePropertyAdditions) {
+      for (let key in this.powerupData.gamePropertyAdditions) {
+        let keyData = this.powerupData.gamePropertyAdditions[key];
+        console.log(
+          `Powerup "${this.name}" found addition for key "${key}": ${this.powerupData.gamePropertyAdditions[key]}`,
+        );
+        if (G[key] != null) {
+          G[key] = G[key] + keyData;
+          console.log(`Game property "${key}" set to: ${G[key]}`);
+        } else {
+          console.log("No key found with name: " + key);
+        }
+      }
+    }
   }
 
   update() {
