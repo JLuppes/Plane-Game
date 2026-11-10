@@ -26,13 +26,19 @@ import {
   fetchJSON,
   engineAddLoad,
   Timer,
+  setCursor,
   mouseIsDown,
+  mousePos,
+  mousePosScreen,
+  mouseInWindow,
 } from "littlejsengine";
 
 const playerFrame = 5;
 const playerSize = 2.5;
 
-const listOfPowerups = await engineAddLoad(fetchJSON("./data/powerups/default.json"));
+const listOfPowerups = await engineAddLoad(
+  fetchJSON("./data/powerups/default.json"),
+);
 // setTileDefaultPadding(1);
 
 const G = {
@@ -292,6 +298,13 @@ class Player extends EngineObject {
   }
 
   handleInput() {
+    let mouseEnabled = true;
+    let alternateMouseControl = true;
+    let mouseDir = vec2(
+      mousePos.x - this.pos.x,
+      mousePos.y - this.pos.y,
+    ).normalize();
+
     if (
       keyIsDown("ArrowLeft") ||
       keyIsDown("ArrowRight") ||
@@ -300,6 +313,19 @@ class Player extends EngineObject {
     ) {
       particleEffect("dust", vec2(this.pos.x, this.pos.y - 0.9));
       G.sfx.fly.play(this.pos);
+    }
+
+    if (!alternateMouseControl && mouseEnabled && mouseInWindow) {
+      const mouseBuffer = 1.5;
+      if (mousePos.distance(this.pos) > mouseBuffer) {
+        this.velocity.x += 0.01 * mouseDir.x;
+        this.velocity.y += 0.0075 * mouseDir.y;
+      }
+    }
+
+    if (alternateMouseControl && mouseEnabled && mouseInWindow) {
+      setCursor("none");
+      this.pos = mousePos;
     }
 
     this.velocity.x += 0.01 * keyDirection()["x"];
