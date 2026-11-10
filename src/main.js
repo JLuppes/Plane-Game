@@ -24,6 +24,7 @@ import {
   particleEffectsLoad,
   ParticleEmitter,
   fetchJSON,
+  engineAddLoad,
   Timer,
   mouseIsDown,
 } from "littlejsengine";
@@ -31,7 +32,7 @@ import {
 const playerFrame = 5;
 const playerSize = 2.5;
 
-const listOfPowerups = await fetchJSON("./data/powerups/default.json");
+const listOfPowerups = await engineAddLoad(fetchJSON("./data/powerups/default.json"));
 // setTileDefaultPadding(1);
 
 const G = {
@@ -251,7 +252,7 @@ function gameRenderPost() {
 
 // fires up LittleJS with all necessary functions and tiles
 
-await particleEffectsLoad("particleEffects.json");
+await engineAddLoad(particleEffectsLoad("particleEffects.json"));
 engineInit(
   gameInit,
   gameUpdate,
