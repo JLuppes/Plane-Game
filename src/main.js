@@ -36,9 +36,13 @@ import {
 const playerFrame = 5;
 const playerSize = 2.5;
 
-const listOfPowerups = await engineAddLoad(
-  fetchJSON("./data/powerups/default.json"),
-);
+const listOfPowerups = (
+  await Promise.all(
+    ["default"].map((n) =>
+      engineAddLoad(fetchJSON(`./data/powerups/${n}.json`)),
+    ),
+  )
+).flat();
 // setTileDefaultPadding(1);
 
 const G = {
