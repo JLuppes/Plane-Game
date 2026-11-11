@@ -422,7 +422,7 @@ class Player extends EngineObject {
         // pause
       }
       t.pos.y -= G.speed;
-      return t.pos.y >= -G.height / 2;
+      return t.pos.y >= (-G.height / 2) - 3;
     });
   }
 
