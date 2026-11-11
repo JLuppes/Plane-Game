@@ -205,18 +205,20 @@ function gameUpdate() {
       (effect) => !effect.timer.elapsed(),
     );
 
-    console.log(
-      "Remaining effects: " +
-        (G.system.currentActiveEffects.length > 0
-          ? G.system.currentActiveEffects
-          : "None"),
-    );
-
-    for (let thisEffect in G.system.currentActiveEffects) {
+    if (G.system.logPulse.elapsed()) {
       console.log(
-        "Active effect: " + G.system.currentActiveEffects[thisEffect].name,
+        "Remaining effects: " +
+          (G.system.currentActiveEffects.length > 0
+            ? G.system.currentActiveEffects
+            : "None"),
       );
-      console.log(G.system.currentActiveEffects[thisEffect]);
+      for (let thisEffect in G.system.currentActiveEffects) {
+        console.log(
+          "Active effect: " + G.system.currentActiveEffects[thisEffect].name,
+        );
+        console.log(G.system.currentActiveEffects[thisEffect]);
+      }
+      G.system.logPulse.set(G.system.logPulseTime);
     }
   }
 }
