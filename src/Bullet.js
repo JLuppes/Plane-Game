@@ -3,8 +3,8 @@ import { G } from "./main";
 
 export class Bullet extends EngineObject {
   constructor(game, source) {
-    let x = game.width / 2;
-    let y = game.height / 2 + 3;
+    let x = game.system.width / 2;
+    let y = game.system.height / 2 + 3;
     let sourcePos = source.pos.copy();
     let pos = vec2(sourcePos.x, sourcePos.y + 0.2);
     let angle = source.angle;

@@ -3,8 +3,8 @@ import { G } from "./main";
 
 export class Enemy extends EngineObject {
   constructor(game) {
-    let x = game.width / 2;
-    let y = game.height / 2 + 3;
+    let x = game.system.width / 2;
+    let y = game.system.height / 2 + 3;
     let pos = vec2(rand(-x, x), y);
     let startHealth = 2;
     let scoreValue = 10;

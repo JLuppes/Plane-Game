@@ -7,11 +7,11 @@ export class Player extends EngineObject {
     super(cameraPos, vec2(size));
 
     // edge of screen left/right
-    this.minX = (game.width - 2) / -2;
-    this.maxX = (game.width - 2) / 2;
+    this.minX = (game.system.width - 2) / -2;
+    this.maxX = (game.system.width - 2) / 2;
 
-    this.minY = (game.height - 2) / -2;
-    this.maxY = (game.height - 2) / 2;
+    this.minY = (game.system.height - 2) / -2;
+    this.maxY = (game.system.height - 2) / 2;
 
     this.frame = frame;
     this.setCollision(true, true, false, false);
@@ -164,7 +164,7 @@ export class Player extends EngineObject {
         // pause
       }
       t.pos.y -= G.speed;
-      return t.pos.y >= -G.height / 2 - 3;
+      return t.pos.y >= -G.system.height / 2 - 3;
     });
   }
 

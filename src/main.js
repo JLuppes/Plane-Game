@@ -44,13 +44,11 @@ const listOfPowerups = (
 
 export const G = {
   system: {
+  // Logical grid size (in tiles)
     width: 20,
     height: 30,
   },
   score: 0,
-  // Logical grid size (in tiles)
-  width: 20,
-  height: 30,
   // Size of one tile in screen pixels
   tileSize: 16,
   tileSheets: { ships: 0, general: 1, input: 2 },
