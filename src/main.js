@@ -56,6 +56,11 @@ export const G = {
     mouseEnabled: true,
     alternateMouseControl: true,
     showControls: true,
+    respawnWaitTime: 2,
+    logPulseTime: 1,
+    logPulse: new Timer(1),
+  invincibleTimer: new Timer(),
+  powerupTimer: new Timer(),
     cols: {
       white: new Color().setHex("#ffffff"),
       red: new Color().setHex("#ff0000"),
@@ -93,13 +98,15 @@ export const G = {
   startHealth: 1,
   startLives: 2,
   startSpeed: 0.1,
+  speedScoreFactor: 1,
+  speedIncreaseFactor: 1,
+  enemySpawnRate: 1,
+  powerupSpawnRate: 1,
   slowdownFactor: 0.03,
   powerupCooldown: 2.0,
   playerLives: 1,
   playerDamage: 1,
   invincibleTime: 3,
-  invincibleTimer: new Timer(),
-  powerupTimer : new Timer(),
 };
 
 // Particles: https://killedbyapixel.github.io/LittleJS/examples/particles/
@@ -112,8 +119,8 @@ function gameInit() {
   G.playerHealth = G.startHealth;
   G.playerLives = G.startLives;
 
-  G.invincibleTimer.set(0);
-  G.powerupTimer.set(0);
+  G.system.invincibleTimer.set(0);
+  G.system.powerupTimer.set(0);
 
   G.system.currentHeldPowerUp = {};
 
@@ -153,25 +160,25 @@ function gameUpdate() {
   // called every frame at 60 frames per second
   // handle input and update the game state
 
-  G.score += G.speed * (1/ 5);
+  G.score += G.speed * (G.speedScoreFactor / 5);
 
-  G.speed += G.speed * 0.0001;
+  G.speed += G.speed * (G.speedIncreaseFactor * 0.0001);
 
   // randomly generate enemies
-  if (rand() > 0.99) {
+  if (rand() > 1 - 0.01 * G.enemySpawnRate) {
     new Enemy(G);
   }
 
   // randomly generate powerups
-  if (rand() > 0.9 && G.powerupTimer.elapsed()) {
+  if (rand() > 1 - 0.1 * G.powerupSpawnRate && G.system.powerupTimer.elapsed()) {
     const powerUpChoice = randPick(listOfPowerups);
     new PowerUp(G, powerUpChoice);
-    G.powerupTimer.set(G.powerupCooldown);
+    G.system.powerupTimer.set(G.powerupCooldown);
   }
 
   if (
     G.system.player.crashed &&
-    time > G.system.player.crashed + 2 &&
+    time > G.system.player.crashed + G.system.respawnWaitTime &&
     (mouseWasPressed(0) || keyWasPressed("Space"))
   ) {
     gameInit();
@@ -308,7 +315,6 @@ function gameRenderPost() {
 }
 
 // fires up LittleJS with all necessary functions and tiles
-
 await engineAddLoad(particleEffectsLoad("particleEffects.json"));
 engineInit(
   gameInit,
