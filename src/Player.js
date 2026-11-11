@@ -1,5 +1,6 @@
 import { EngineObject, cameraPos, vec2, time, mousePos, setCursor, keyWasPressed, keyIsDown, particleEffect, mouseInWindow, keyDirection, mouseIsDown, drawTile, tile } from "littlejsengine";
-import { playerSize, playerFrame, G, createBullet } from "./main";
+import { playerSize, playerFrame, G } from "./main";
+import {Bullet} from "./Bullet"
 
 export class Player extends EngineObject {
   constructor(game) {
@@ -95,7 +96,7 @@ export class Player extends EngineObject {
     if (time - this.lastShot > this.reloadTime) {
       LOG("Pew!");
 
-      this.bullets.push(createBullet(this));
+      this.bullets.push(new Bullet(G, this));
 
       particleEffect("muzzle", vec2(this.pos.x - 0.6, this.pos.y + 0.55), {
         scale: 0.3,
@@ -178,7 +179,7 @@ export class Player extends EngineObject {
     }
   }
   takeHit(damageAmount = 1) {
-    if (G.invincibleTimer.elapsed()) {
+    if (G.system.invincibleTimer.elapsed()) {
       G.playerHealth -= damageAmount;
       if (G.playerHealth <= 0) {
         this.loseLife();
@@ -193,7 +194,7 @@ export class Player extends EngineObject {
     if (G.playerLives < 0) {
       this.die();
     } else {
-      G.invincibleTimer.set(G.invincibleTime);
+      G.system.invincibleTimer.set(G.invincibleTime);
     }
   }
 
@@ -218,7 +219,7 @@ export class Player extends EngineObject {
   }
 
   render() {
-    if (G.invincibleTimer.elapsed() || Math.sin(time * 24) > 0) {
+    if (G.system.invincibleTimer.elapsed() || Math.sin(time * 24) > 0) {
       this.drawShip();
     }
   }

@@ -324,7 +324,3 @@ engineInit(
   gameRenderPost,
   G.system.tiles,
 );
-
-export function createBullet(source) {
-  return new Bullet(G, source);
-}
