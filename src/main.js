@@ -271,6 +271,58 @@ function gameRenderPost() {
   if (G.player.crashed && Math.sin(time * 5) > 0) {
     drawText("GAME OVER", vec2(0, 0), 2, G.cols.red, 0.5);
   }
+
+  // Info popups
+  G.infoPopups = G.infoPopups.filter((popup) => !popup.displayTimer.elapsed());
+  for (const thisPopup in G.infoPopups) {
+    G.infoPopups[thisPopup].display();
+  }
+}
+
+class infoPopup {
+  constructor(
+    text,
+    pos = vec2(0, 0),
+    size = 1,
+    duration = 2,
+    color = G.cols.red,
+    lineWidth = 0.2,
+    followPlayer = false,
+    displayType = "default",
+  ) {
+    this.text = text;
+    this.pos = followPlayer ? G.player.pos : pos;
+    this.size = size;
+    this.duration = duration;
+    this.color = color;
+    this.lineWidth = lineWidth;
+    this.followPlayer = followPlayer;
+    this.displayType = displayType;
+    this.currentSize = size;
+
+    this.displayTimer = new Timer(duration);
+  }
+
+  display() {
+    if (this.followPlayer) {
+      this.pos = G.player.pos.copy();
+    }
+    if (this.displayType == "wave") {
+      this.displayWave();
+    } else {
+      this.displayText();
+    }
+  }
+  displayWave() {
+    this.currentSize =
+      this.size /
+      1 /
+      (1 + Math.abs(Math.sin(this.displayTimer.getPercent() * 6 + 2) + 1));
+    this.displayText();
+  }
+  displayText() {
+    drawText(this.text, this.pos, this.currentSize, this.color, this.lineWidth);
+  }
 }
 
 // fires up LittleJS with all necessary functions and tiles
