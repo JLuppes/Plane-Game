@@ -58,6 +58,7 @@ const G = {
   powerupCooldown: 2.0,
   currentHeldPowerUp: {},
   currentActiveEffects: [],
+  infoPopups: [],
   playerLives: 1,
   playerDamage: 1,
   invincibleTime: 3,
