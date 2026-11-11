@@ -1,10 +1,26 @@
-import { EngineObject, cameraPos, vec2, time, mousePos, setCursor, keyWasPressed, keyIsDown, particleEffect, mouseInWindow, keyDirection, mouseIsDown, drawTile, tile } from "littlejsengine";
-import { playerSize, playerFrame, G } from "./main";
-import {Bullet} from "./Bullet"
+import {
+  EngineObject,
+  cameraPos,
+  vec2,
+  time,
+  mousePos,
+  setCursor,
+  keyWasPressed,
+  keyIsDown,
+  particleEffect,
+  mouseInWindow,
+  keyDirection,
+  mouseIsDown,
+  drawTile,
+  tile,
+} from "littlejsengine";
+import { G } from "./main";
+import { Bullet } from "./Bullet";
 
 export class Player extends EngineObject {
   constructor(game) {
-    let size = playerSize, frame = playerFrame;
+    let size = G.system.playerSize,
+      frame = G.system.playerFrame;
     super(cameraPos, vec2(size));
 
     // edge of screen left/right
@@ -33,7 +49,7 @@ export class Player extends EngineObject {
   handleInput() {
     let mouseDir = vec2(
       mousePos.x - this.pos.x,
-      mousePos.y - this.pos.y
+      mousePos.y - this.pos.y,
     ).normalize();
     if (G.system.alternateMouseControl) setCursor("none");
 
@@ -52,15 +68,21 @@ export class Player extends EngineObject {
         G.system.alternateMouseControl = true;
       }
     }
-    if (keyIsDown("ArrowLeft") ||
+    if (
+      keyIsDown("ArrowLeft") ||
       keyIsDown("ArrowRight") ||
       keyIsDown("ArrowUp") ||
-      keyIsDown("ArrowDown")) {
+      keyIsDown("ArrowDown")
+    ) {
       particleEffect("dust", vec2(this.pos.x, this.pos.y - 0.9));
       G.system.sfx.fly.play(this.pos);
     }
 
-    if (!G.system.alternateMouseControl && G.system.mouseEnabled && mouseInWindow) {
+    if (
+      !G.system.alternateMouseControl &&
+      G.system.mouseEnabled &&
+      mouseInWindow
+    ) {
       const mouseBuffer = 1.5;
       if (mousePos.distance(this.pos) > mouseBuffer) {
         this.velocity.x += 0.01 * mouseDir.x;
@@ -68,7 +90,11 @@ export class Player extends EngineObject {
       }
     }
 
-    if (G.system.alternateMouseControl && G.system.mouseEnabled && mouseInWindow) {
+    if (
+      G.system.alternateMouseControl &&
+      G.system.mouseEnabled &&
+      mouseInWindow
+    ) {
       this.pos = mousePos;
     }
 
@@ -212,9 +238,13 @@ export class Player extends EngineObject {
     drawTile(
       this.pos,
       this.size,
-      tile(this.currentFrame, G.system.tileSize * 2, G.system.tileSheets["ships"]),
+      tile(
+        this.currentFrame,
+        G.system.tileSize * 2,
+        G.system.tileSheets["ships"],
+      ),
       undefined,
-      this.angle
+      this.angle,
     );
   }
 

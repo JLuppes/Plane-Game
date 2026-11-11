@@ -59,8 +59,10 @@ export const G = {
     respawnWaitTime: 2,
     logPulseTime: 1,
     logPulse: new Timer(1),
-  invincibleTimer: new Timer(),
-  powerupTimer: new Timer(),
+    playerFrame: 5,
+    playerSize: 2.5,
+    invincibleTimer: new Timer(),
+    powerupTimer: new Timer(),
     cols: {
       white: new Color().setHex("#ffffff"),
       red: new Color().setHex("#ff0000"),
@@ -170,7 +172,10 @@ function gameUpdate() {
   }
 
   // randomly generate powerups
-  if (rand() > 1 - 0.1 * G.powerupSpawnRate && G.system.powerupTimer.elapsed()) {
+  if (
+    rand() > 1 - 0.1 * G.powerupSpawnRate &&
+    G.system.powerupTimer.elapsed()
+  ) {
     const powerUpChoice = randPick(listOfPowerups);
     new PowerUp(G, powerUpChoice);
     G.system.powerupTimer.set(G.powerupCooldown);

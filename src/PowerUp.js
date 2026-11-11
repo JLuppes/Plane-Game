@@ -12,7 +12,11 @@ export class PowerUp extends EngineObject {
     let spriteSheet = powerupData.spriteSheet
       ? powerupData.spriteSheet
       : "general";
-    let tileData = tile(frame, game.system.tileSize, G.system.tileSheets[spriteSheet]);
+    let tileData = tile(
+      frame,
+      game.system.tileSize,
+      G.system.tileSheets[spriteSheet],
+    );
 
     super(pos, vec2(0.8), tileData);
 

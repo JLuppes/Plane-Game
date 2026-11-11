@@ -1,7 +1,6 @@
 import { vec2, Timer, drawText } from "littlejsengine";
 import { G } from "./main";
 
-
 export class InfoPopup {
   constructor(
     text,
@@ -11,7 +10,7 @@ export class InfoPopup {
     color = G.system.cols.red,
     lineWidth = 0.2,
     followPlayer = false,
-    displayType = "default"
+    displayType = "default",
   ) {
     this.text = text;
     this.pos = followPlayer ? G.system.player.pos : pos;

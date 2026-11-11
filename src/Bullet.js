@@ -12,7 +12,11 @@ export class Bullet extends EngineObject {
     let bulletDamage = G.playerDamage;
 
     let frame = 1;
-    super(pos, vec2(1.8), tile(frame, game.system.tileSize, G.system.tileSheets["general"]));
+    super(
+      pos,
+      vec2(1.8),
+      tile(frame, game.system.tileSize, G.system.tileSheets["general"]),
+    );
     this.angle = Math.PI;
     this.game = game;
 
