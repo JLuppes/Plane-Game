@@ -48,7 +48,7 @@ export class Player extends EngineObject {
   }
 
   handleInput() {
-    const displayPos = vec2(G.system.center.x, G.system.center.y-13);
+    const displayPos = vec2(G.system.center.x, G.system.center.y - 13);
     let mouseDir = vec2(
       mousePos.x - this.pos.x,
       mousePos.y - this.pos.y,
@@ -60,20 +60,26 @@ export class Player extends EngineObject {
         G.system.mouseEnabled = true;
         G.system.alternateMouseControl = false;
         setCursor("crosshair");
-        G.system.infoPopups = []
-        G.system.infoPopups.push(new InfoPopup("Mouse Control: Follow", displayPos))
+        G.system.infoPopups = [];
+        G.system.infoPopups.push(
+          new InfoPopup("Mouse Control: Follow", displayPos),
+        );
       } else if (G.system.mouseEnabled && !G.system.alternateMouseControl) {
         setCursor("none");
         G.system.mouseEnabled = false;
         G.system.alternateMouseControl = false;
-        G.system.infoPopups = []
-        G.system.infoPopups.push(new InfoPopup("Mouse Control: Off", displayPos))
+        G.system.infoPopups = [];
+        G.system.infoPopups.push(
+          new InfoPopup("Mouse Control: Off", displayPos),
+        );
       } else {
         setCursor("default");
         G.system.mouseEnabled = true;
         G.system.alternateMouseControl = true;
-        G.system.infoPopups = []
-        G.system.infoPopups.push(new InfoPopup("Mouse Control: Direct", displayPos))
+        G.system.infoPopups = [];
+        G.system.infoPopups.push(
+          new InfoPopup("Mouse Control: Direct", displayPos),
+        );
       }
     }
     if (

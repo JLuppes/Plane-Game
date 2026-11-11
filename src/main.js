@@ -310,6 +310,21 @@ function gameRenderPost() {
     drawText("GAME OVER", vec2(0, 0), 2, G.system.cols.red, 0.5);
   }
 
+  // Controls Display
+  if (G.system.showControls) {
+    const mouseControlsStartPos = vec2(G.system.center.x+9.25, G.system.center.y-13);
+    drawTile(
+      mouseControlsStartPos,
+      vec2(1.5),
+      tile(76, G.system.tileSize, G.system.tileSheets["input"]),
+    );
+    drawTile(
+      mouseControlsStartPos.add(vec2(0,2)),
+      vec2(1.5),
+      tile(161, G.system.tileSize, G.system.tileSheets["input"]),
+    );
+  }
+
   // Info popups
   G.system.infoPopups = G.system.infoPopups.filter(
     (popup) => !popup.displayTimer.elapsed(),
