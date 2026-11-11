@@ -653,6 +653,9 @@ class PowerUp extends EngineObject {
 
   pickedUp() {
     console.log("Picked up Powerup: " + this.name);
+    const powerupInfoPopup = new infoPopup(this.powerupData.name, this.pos);
+    powerupInfoPopup.displayType = "wave";
+    G.infoPopups.push(powerupInfoPopup);
     particleEffect("magic", this.pos).emitTime = 0.1;
     G.score += this.pointValue;
     if (this.powerupData.autoUse) {
