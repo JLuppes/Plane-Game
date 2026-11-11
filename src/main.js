@@ -89,12 +89,17 @@ export const G = {
     },
   },
   score: 0,
+  startScore: 0,
+  startHealth: 1,
+  startLives: 2,
+  startSpeed: 0.1,
   slowdownFactor: 0.03,
   powerupCooldown: 2.0,
   playerLives: 1,
   playerDamage: 1,
   invincibleTime: 3,
   invincibleTimer: new Timer(),
+  powerupTimer : new Timer(),
 };
 
 // Particles: https://killedbyapixel.github.io/LittleJS/examples/particles/
@@ -103,13 +108,13 @@ export const G = {
 // called once after the engine starts up
 function gameInit() {
   // setup the game
-  G.score = 0;
-  G.playerHealth = 1;
-  G.playerLives = 2;
+  G.score = G.startScore;
+  G.playerHealth = G.startHealth;
+  G.playerLives = G.startLives;
 
-  G.invincibleTimer = new Timer(0);
+  G.invincibleTimer.set(0);
+  G.powerupTimer.set(0);
 
-  G.powerupTimer = new Timer(G.powerupCooldown);
   G.system.currentHeldPowerUp = {};
 
   // Compute the fixed canvas size in screen pixels
@@ -127,7 +132,7 @@ function gameInit() {
 
   // World space center point (origin-based)
   // Useful for camera position, spawning, etc.
-  G.center = vec2(0);
+  G.system.center = vec2(0);
 
   // Set camera scale so that
   // 1 world unit == 1 tile
@@ -139,7 +144,7 @@ function gameInit() {
 
   G.system.player = new Player(G);
 
-  G.speed = 0.1;
+  G.speed = G.startSpeed;
 
   setTileDefaultBleed(0.5);
 }
@@ -148,7 +153,7 @@ function gameUpdate() {
   // called every frame at 60 frames per second
   // handle input and update the game state
 
-  G.score += G.speed / 5;
+  G.score += G.speed * (1/ 5);
 
   G.speed += G.speed * 0.0001;
 
@@ -223,7 +228,7 @@ function gameUpdatePost() {
 
 function gameRender() {
   //clear screen with white rectangle
-  drawRect(G.center, G.size, G.system.cols.sky);
+  drawRect(G.system.center, G.size, G.system.cols.sky);
 }
 
 function gameRenderPost() {
