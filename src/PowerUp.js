@@ -75,6 +75,12 @@ export class PowerUp extends EngineObject {
   applyOverwrites() {
     if (this.powerupData.gamePropertyOverwrites) {
       for (let key in this.powerupData.gamePropertyOverwrites) {
+        if (key.includes("system")) {
+          console.log(
+            `System key ${key} found in powerup ${this.powerupData.name}!\nCancelling usage.`,
+          );
+          continue;
+        }
         let keyDataOriginal = G[key];
         this.powerupData.gamePropertyOverwrites[key + "-original"] =
           keyDataOriginal;
@@ -114,6 +120,12 @@ export class PowerUp extends EngineObject {
   applyAdditions() {
     if (this.powerupData.gamePropertyAdditions) {
       for (let key in this.powerupData.gamePropertyAdditions) {
+        if (key.includes("system")) {
+          console.log(
+            `System key ${key} found in powerup ${this.powerupData.name}!\nCancelling usage.`,
+          );
+          continue;
+        }
         let keyData = this.powerupData.gamePropertyAdditions[key];
         console.log(
           `Powerup "${this.name}" found addition for key "${key}": ${this.powerupData.gamePropertyAdditions[key]}`,

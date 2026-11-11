@@ -16,5 +16,13 @@
     "duration": 5,
     "gamePropertyOverwrites": { "speed": 0.05 },
     "gamePropertyAdditions": {}
+  },
+  {
+    "name": "BadActor",
+    "priority": 2,
+    "frame": 29,
+    "spriteSheet": "general",
+    "gamePropertyOverwrites": { },
+    "gamePropertyAdditions": { "system.speed": 1}
   }
 ]

@@ -43,6 +43,10 @@ const listOfPowerups = (
 // setTileDefaultPadding(1);
 
 export const G = {
+  system: {
+    width: 20,
+    height: 30,
+  },
   score: 0,
   // Logical grid size (in tiles)
   width: 20,
@@ -95,6 +99,10 @@ export const G = {
   },
 };
 
+export const SystemProps = {
+  score: 0,
+};
+
 // Particles: https://killedbyapixel.github.io/LittleJS/examples/particles/
 // Sounds: https://killedbyapixel.github.io/ZzFX/
 
@@ -111,14 +119,14 @@ function gameInit() {
   G.currentHeldPowerUp = {};
 
   // Compute the fixed canvas size in screen pixels
-  const gameSize = vec2(G.width * G.tileSize, G.height * G.tileSize);
+  const gameSize = vec2(G.system.width * G.tileSize, G.system.height * G.tileSize);
 
   // Lock canva to an exact pixel size
   // Prevents browser scaling and keeps pixels crisp
   setCanvasFixedSize(gameSize);
 
   // Cache the logical grid size as a vector (in tiles, not pixels)
-  G.size = vec2(G.width, G.height);
+  G.size = vec2(G.system.width, G.system.height);
 
   // World space center point (origin-based)
   // Useful for camera position, spawning, etc.
