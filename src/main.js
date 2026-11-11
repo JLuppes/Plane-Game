@@ -23,6 +23,7 @@ import {
   engineAddLoad,
   Timer,
   mousePosScreen,
+  randPick,
 } from "littlejsengine";
 import { Player } from "./Player";
 import { PowerUp } from "./PowerUp";
@@ -147,14 +148,14 @@ function gameUpdate() {
   G.speed += G.speed * 0.0001;
 
   // randomly generate enemies
-  if (Math.random() > 0.99) {
+  if (rand() > 0.99) {
     new Enemy(G);
   }
 
   // randomly generate powerups
-  if (Math.random() > 0.9 && G.powerupTimer.elapsed()) {
-    const powerUpChoice = Math.floor(Math.random() * listOfPowerups.length);
-    new PowerUp(G, listOfPowerups[powerUpChoice]);
+  if (rand() > 0.9 && G.powerupTimer.elapsed()) {
+    const powerUpChoice = randPick(listOfPowerups);
+    new PowerUp(G, powerUpChoice);
     G.powerupTimer.set(G.powerupCooldown);
   }
 
