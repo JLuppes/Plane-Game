@@ -99,6 +99,7 @@ export const G = {
   startScore: 0,
   startHealth: 1,
   startLives: 2,
+  livesDisplayMax: 3,
   startSpeed: 0.1,
   speedScoreFactor: 1,
   speedIncreaseFactor: 1,
@@ -286,9 +287,25 @@ function gameRenderPost() {
   // Lives Display
   let lives = Math.floor(G.playerLives);
   let livesStartPos = cameraPos.copy().add(vec2(-8, -13));
-  for (let i = 0; i < lives; i++) {
+  let livesDisplayMax = G.livesDisplayMax;
+  if (lives <= livesDisplayMax) {
+    for (let i = 0; i < lives; i++) {
+      if (i <= 3) {
+        drawTile(
+          livesStartPos.add(vec2(i * 1.75, 0)),
+          vec2(2.5),
+          tile(
+            G.system.player.currentFrame,
+            G.system.tileSize * 2,
+            G.system.tileSheets["ships"],
+          ),
+        );
+      }
+    }
+  } else {
+    let lives = Math.floor(G.playerLives).toString();
     drawTile(
-      livesStartPos.add(vec2(i * 1.75, 0)),
+      livesStartPos.add(vec2(0, 0)),
       vec2(2.5),
       tile(
         G.system.player.currentFrame,
@@ -296,6 +313,18 @@ function gameRenderPost() {
         G.system.tileSheets["ships"],
       ),
     );
+    lives.split("").forEach((num, index) => {
+      num = parseInt(num, 10);
+      drawTile(
+        livesStartPos.add(vec2(index * 1.75 + 0.75 * 2.5, 0)),
+        vec2(2),
+        tile(
+          19 + (num > 4 ? 7 + num : num),
+          G.system.tileSize,
+          G.system.tileSheets["general"],
+        ),
+      );
+    });
   }
 
   // Game Over Screen
@@ -305,14 +334,17 @@ function gameRenderPost() {
 
   // Controls Display
   if (G.system.showControls) {
-    const mouseControlsStartPos = vec2(G.system.center.x+9.25, G.system.center.y-13);
+    const mouseControlsStartPos = vec2(
+      G.system.center.x + 9.25,
+      G.system.center.y - 13,
+    );
     drawTile(
       mouseControlsStartPos,
       vec2(1.5),
       tile(76, G.system.tileSize, G.system.tileSheets["input"]),
     );
     drawTile(
-      mouseControlsStartPos.add(vec2(0,2)),
+      mouseControlsStartPos.add(vec2(0, 2)),
       vec2(1.5),
       tile(161, G.system.tileSize, G.system.tileSheets["input"]),
     );
