@@ -33,10 +33,15 @@ export class PowerUp extends EngineObject {
       : defaultPointValue;
   }
 
-  collideWithObject(o) {
-    if (o.gameType == "player") {
-      this.pickedUp();
-    }
+  startUp() {
+    this.applyOverwrites();
+    this.applyAdditions();
+  }
+
+  shutDown() {
+    this.removeOverwrites();
+    this.removeAdditions();
+    this.destroy();
   }
 
   pickedUp() {
@@ -75,7 +80,7 @@ export class PowerUp extends EngineObject {
           keyDataOriginal;
         let keyData = this.powerupData.gamePropertyOverwrites[key];
         console.log(
-          `Powerup "${this.name}" found overwrite for key "${key}": ${keyData}`
+          `Powerup "${this.name}" found overwrite for key "${key}": ${keyData}`,
         );
         if (G[key] != null) {
           G[key] = keyData;
@@ -85,17 +90,6 @@ export class PowerUp extends EngineObject {
         }
       }
     }
-  }
-
-  startUp() {
-    this.applyOverwrites();
-    this.applyAdditions();
-  }
-
-  shutDown() {
-    this.removeOverwrites();
-    this.removeAdditions();
-    this.destroy();
   }
 
   removeOverwrites() {
@@ -117,13 +111,30 @@ export class PowerUp extends EngineObject {
     }
   }
 
+  applyAdditions() {
+    if (this.powerupData.gamePropertyAdditions) {
+      for (let key in this.powerupData.gamePropertyAdditions) {
+        let keyData = this.powerupData.gamePropertyAdditions[key];
+        console.log(
+          `Powerup "${this.name}" found addition for key "${key}": ${this.powerupData.gamePropertyAdditions[key]}`,
+        );
+        if (G[key] != null) {
+          G[key] = G[key] + keyData;
+          console.log(`Game property "${key}" set to: ${G[key]}`);
+        } else {
+          console.log("No key found with name: " + key);
+        }
+      }
+    }
+  }
+
   removeAdditions() {
     console.log("Removing addition:");
     if (this.powerupData.gamePropertyAdditions) {
       for (let key in this.powerupData.gamePropertyAdditions) {
         let keyData = this.powerupData.gamePropertyAdditions[key];
         console.log(
-          `Powerup "${this.name}" removing addition for key "${key}": ${this.powerupData.gamePropertyAdditions[key]}`
+          `Powerup "${this.name}" removing addition for key "${key}": ${this.powerupData.gamePropertyAdditions[key]}`,
         );
         if (G[key] != null) {
           G[key] = G[key] - keyData;
@@ -135,20 +146,9 @@ export class PowerUp extends EngineObject {
     }
   }
 
-  applyAdditions() {
-    if (this.powerupData.gamePropertyAdditions) {
-      for (let key in this.powerupData.gamePropertyAdditions) {
-        let keyData = this.powerupData.gamePropertyAdditions[key];
-        console.log(
-          `Powerup "${this.name}" found addition for key "${key}": ${this.powerupData.gamePropertyAdditions[key]}`
-        );
-        if (G[key] != null) {
-          G[key] = G[key] + keyData;
-          console.log(`Game property "${key}" set to: ${G[key]}`);
-        } else {
-          console.log("No key found with name: " + key);
-        }
-      }
+  collideWithObject(o) {
+    if (o.gameType == "player") {
+      this.pickedUp();
     }
   }
 
