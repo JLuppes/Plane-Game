@@ -13,7 +13,7 @@ export class Enemy extends EngineObject {
     super(
       pos,
       vec2(0.5),
-      tile(frame, game.tileSize * 2, G.tileSheets["ships"])
+      tile(frame, game.system.tileSize * 2, G.system.tileSheets["ships"])
     );
     this.angle = Math.PI;
     this.game = game;

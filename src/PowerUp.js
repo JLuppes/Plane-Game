@@ -12,7 +12,7 @@ export class PowerUp extends EngineObject {
     let spriteSheet = powerupData.spriteSheet
       ? powerupData.spriteSheet
       : "general";
-    let tileData = tile(frame, game.tileSize, G.tileSheets[spriteSheet]);
+    let tileData = tile(frame, game.system.tileSize, G.system.tileSheets[spriteSheet]);
 
     super(pos, vec2(0.8), tileData);
 
@@ -48,27 +48,27 @@ export class PowerUp extends EngineObject {
     console.log("Picked up Powerup: " + this.name);
     const powerupInfoPopup = new InfoPopup(this.powerupData.name, this.pos);
     powerupInfoPopup.displayType = "wave";
-    G.infoPopups.push(powerupInfoPopup);
+    G.system.infoPopups.push(powerupInfoPopup);
     particleEffect("magic", this.pos).emitTime = 0.1;
     G.score += this.pointValue;
     if (this.powerupData.autoUse) {
       this.usePowerup();
     } else {
-      G.currentHeldPowerUp = this;
+      G.system.currentHeldPowerUp = this;
     }
     super.destroy();
   }
 
   usePowerup() {
     if (this.powerupData.duration > 0) {
-      G.currentActiveEffects.push(this);
+      G.system.currentActiveEffects.push(this);
     } else {
       this.applyOverwrites();
       this.applyAdditions();
       super.destroy();
     }
     if (!this.powerupData.autoUse) {
-      G.currentHeldPowerUp = {};
+      G.system.currentHeldPowerUp = {};
     }
   }
 

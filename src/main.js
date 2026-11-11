@@ -44,26 +44,18 @@ const listOfPowerups = (
 
 export const G = {
   system: {
-  // Logical grid size (in tiles)
+    // Logical grid size (in tiles)
     width: 20,
     height: 30,
-  },
-  score: 0,
-  // Size of one tile in screen pixels
-  tileSize: 16,
-  tileSheets: { ships: 0, general: 1, input: 2 },
-  tiles: ["/ships.png", "/tiles.png", "/input.png"],
-  slowdownFactor: 0.03,
-  powerupCooldown: 2.0,
-  currentHeldPowerUp: {},
-  currentActiveEffects: [],
-  infoPopups: [],
-  playerLives: 1,
-  playerDamage: 1,
-  invincibleTime: 3,
-  mouseEnabled: true,
-  alternateMouseControl: true,
-  showControls: true,
+    tileSize: 16,
+    tileSheets: { ships: 0, general: 1, input: 2 },
+    tiles: ["/ships.png", "/tiles.png", "/input.png"],
+    currentHeldPowerUp: {},
+    currentActiveEffects: [],
+    infoPopups: [],
+    mouseEnabled: true,
+    alternateMouseControl: true,
+    showControls: true,
   cols: {
     white: new Color().setHex("#ffffff"),
     red: new Color().setHex("#ff0000"),
@@ -95,10 +87,13 @@ export const G = {
       150,
     ]),
   },
-};
-
-export const SystemProps = {
+  },
   score: 0,
+  slowdownFactor: 0.03,
+  powerupCooldown: 2.0,
+  playerLives: 1,
+  playerDamage: 1,
+  invincibleTime: 3,
 };
 
 // Particles: https://killedbyapixel.github.io/LittleJS/examples/particles/
@@ -114,10 +109,13 @@ function gameInit() {
   G.invincibleTimer = new Timer(0);
 
   G.powerupTimer = new Timer(G.powerupCooldown);
-  G.currentHeldPowerUp = {};
+  G.system.currentHeldPowerUp = {};
 
   // Compute the fixed canvas size in screen pixels
-  const gameSize = vec2(G.system.width * G.tileSize, G.system.height * G.tileSize);
+  const gameSize = vec2(
+    G.system.width * G.system.tileSize,
+    G.system.height * G.system.tileSize,
+  );
 
   // Lock canva to an exact pixel size
   // Prevents browser scaling and keeps pixels crisp
@@ -133,8 +131,8 @@ function gameInit() {
   // Set camera scale so that
   // 1 world unit == 1 tile
   // (1x1 object renders as 16x16 pixels)
-  // cameraScale = G.tileSize;
-  setCameraScale(G.tileSize);
+  // cameraScale = G.system.tileSize;
+  setCameraScale(G.system.tileSize);
 
   engineObjectsDestroy();
 
@@ -173,12 +171,12 @@ function gameUpdate() {
     gameInit();
   }
 
-  if (G.currentActiveEffects.length > 0) {
-    for (let thisEffect in G.currentActiveEffects) {
-      const currentEffect = G.currentActiveEffects[thisEffect];
+  if (G.system.currentActiveEffects.length > 0) {
+    for (let thisEffect in G.system.currentActiveEffects) {
+      const currentEffect = G.system.currentActiveEffects[thisEffect];
       if (!currentEffect.effectActive) {
         console.log(
-          "Activating effect: " + G.currentActiveEffects[currentEffect],
+          "Activating effect: " + G.system.currentActiveEffects[currentEffect],
         );
         currentEffect.effectActive = true;
         currentEffect.timer = new Timer(
@@ -190,25 +188,29 @@ function gameUpdate() {
       }
     }
 
-    const oldEffect = G.currentActiveEffects.filter((effect) =>
+    const oldEffect = G.system.currentActiveEffects.filter((effect) =>
       effect.timer.elapsed(),
     );
     for (const thisOldeEffect in oldEffect) {
       oldEffect[thisOldeEffect].shutDown();
     }
 
-    G.currentActiveEffects = G.currentActiveEffects.filter(
+    G.system.currentActiveEffects = G.system.currentActiveEffects.filter(
       (effect) => !effect.timer.elapsed(),
     );
 
     console.log(
       "Remaining effects: " +
-        (G.currentActiveEffects.length > 0 ? G.currentActiveEffects : "None"),
+        (G.system.currentActiveEffects.length > 0
+          ? G.system.currentActiveEffects
+          : "None"),
     );
 
-    for (let thisEffect in G.currentActiveEffects) {
-      console.log("Active effect: " + G.currentActiveEffects[thisEffect].name);
-      console.log(G.currentActiveEffects[thisEffect]);
+    for (let thisEffect in G.system.currentActiveEffects) {
+      console.log(
+        "Active effect: " + G.system.currentActiveEffects[thisEffect].name,
+      );
+      console.log(G.system.currentActiveEffects[thisEffect]);
     }
   }
 }
@@ -220,7 +222,7 @@ function gameUpdatePost() {
 
 function gameRender() {
   //clear screen with white rectangle
-  drawRect(G.center, G.size, G.cols.sky);
+  drawRect(G.center, G.size, G.system.cols.sky);
 }
 
 function gameRenderPost() {
@@ -230,22 +232,26 @@ function gameRenderPost() {
   // Currently Held Powerup UI Display
   let powerupFrameStartPos = cameraPos.copy().add(vec2(7, -13));
   // Button Display
-  if (G.showControls) {
+  if (G.system.showControls) {
     drawTile(
       vec2(powerupFrameStartPos.x, powerupFrameStartPos.y + 2),
       vec2(1.5),
-      tile(87, G.tileSize, G.tileSheets["input"]),
+      tile(87, G.system.tileSize, G.system.tileSheets["input"]),
     );
   }
   // Frame
   drawTile(
     powerupFrameStartPos,
     vec2(2.5),
-    tile(27, G.tileSize, G.tileSheets["general"]),
+    tile(27, G.system.tileSize, G.system.tileSheets["general"]),
   );
   // Current Powerup
-  if (G.currentHeldPowerUp.tileData) {
-    drawTile(powerupFrameStartPos, vec2(1.5), G.currentHeldPowerUp.tileData);
+  if (G.system.currentHeldPowerUp.tileData) {
+    drawTile(
+      powerupFrameStartPos,
+      vec2(1.5),
+      G.system.currentHeldPowerUp.tileData,
+    );
   }
 
   // Score UI Display
@@ -256,7 +262,11 @@ function gameRenderPost() {
     drawTile(
       scoreStartPos.add(vec2(index * 1.75, 0)),
       vec2(2.5),
-      tile(19 + (num > 4 ? 7 + num : num), G.tileSize, G.tileSheets["general"]),
+      tile(
+        19 + (num > 4 ? 7 + num : num),
+        G.system.tileSize,
+        G.system.tileSheets["general"],
+      ),
     );
   });
 
@@ -267,19 +277,25 @@ function gameRenderPost() {
     drawTile(
       livesStartPos.add(vec2(i * 1.75, 0)),
       vec2(2.5),
-      tile(G.player.currentFrame, G.tileSize * 2, G.tileSheets["ships"]),
+      tile(
+        G.player.currentFrame,
+        G.system.tileSize * 2,
+        G.system.tileSheets["ships"],
+      ),
     );
   }
 
   // Game Over Screen
   if (G.player.crashed && Math.sin(time * 5) > 0) {
-    drawText("GAME OVER", vec2(0, 0), 2, G.cols.red, 0.5);
+    drawText("GAME OVER", vec2(0, 0), 2, G.system.cols.red, 0.5);
   }
 
   // Info popups
-  G.infoPopups = G.infoPopups.filter((popup) => !popup.displayTimer.elapsed());
-  for (const thisPopup in G.infoPopups) {
-    G.infoPopups[thisPopup].display();
+  G.system.infoPopups = G.system.infoPopups.filter(
+    (popup) => !popup.displayTimer.elapsed(),
+  );
+  for (const thisPopup in G.system.infoPopups) {
+    G.system.infoPopups[thisPopup].display();
   }
 }
 
@@ -292,7 +308,7 @@ engineInit(
   gameUpdatePost,
   gameRender,
   gameRenderPost,
-  G.tiles,
+  G.system.tiles,
 );
 
 export function createBullet(source) {

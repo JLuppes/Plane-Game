@@ -34,21 +34,21 @@ export class Player extends EngineObject {
       mousePos.x - this.pos.x,
       mousePos.y - this.pos.y
     ).normalize();
-    if (G.alternateMouseControl) setCursor("none");
+    if (G.system.alternateMouseControl) setCursor("none");
 
     if (keyWasPressed("KeyM")) {
-      if (G.mouseEnabled && G.alternateMouseControl) {
-        G.mouseEnabled = true;
-        G.alternateMouseControl = false;
+      if (G.system.mouseEnabled && G.system.alternateMouseControl) {
+        G.system.mouseEnabled = true;
+        G.system.alternateMouseControl = false;
         setCursor("crosshair");
-      } else if (G.mouseEnabled && !G.alternateMouseControl) {
+      } else if (G.system.mouseEnabled && !G.system.alternateMouseControl) {
         setCursor("none");
-        G.mouseEnabled = false;
-        G.alternateMouseControl = false;
+        G.system.mouseEnabled = false;
+        G.system.alternateMouseControl = false;
       } else {
         setCursor("default");
-        G.mouseEnabled = true;
-        G.alternateMouseControl = true;
+        G.system.mouseEnabled = true;
+        G.system.alternateMouseControl = true;
       }
     }
     if (keyIsDown("ArrowLeft") ||
@@ -56,10 +56,10 @@ export class Player extends EngineObject {
       keyIsDown("ArrowUp") ||
       keyIsDown("ArrowDown")) {
       particleEffect("dust", vec2(this.pos.x, this.pos.y - 0.9));
-      G.sfx.fly.play(this.pos);
+      G.system.sfx.fly.play(this.pos);
     }
 
-    if (!G.alternateMouseControl && G.mouseEnabled && mouseInWindow) {
+    if (!G.system.alternateMouseControl && G.system.mouseEnabled && mouseInWindow) {
       const mouseBuffer = 1.5;
       if (mousePos.distance(this.pos) > mouseBuffer) {
         this.velocity.x += 0.01 * mouseDir.x;
@@ -67,7 +67,7 @@ export class Player extends EngineObject {
       }
     }
 
-    if (G.alternateMouseControl && G.mouseEnabled && mouseInWindow) {
+    if (G.system.alternateMouseControl && G.system.mouseEnabled && mouseInWindow) {
       this.pos = mousePos;
     }
 
@@ -83,8 +83,8 @@ export class Player extends EngineObject {
     }
 
     if (keyWasPressed("KeyE")) {
-      if (G.currentHeldPowerUp.usePowerup) {
-        G.currentHeldPowerUp.usePowerup();
+      if (G.system.currentHeldPowerUp.usePowerup) {
+        G.system.currentHeldPowerUp.usePowerup();
       }
     }
   }
@@ -204,14 +204,14 @@ export class Player extends EngineObject {
     this.crashed = time;
     particleEffect("explosion", this.pos);
     this.frame = this.frame + 12;
-    G.sfx.hit.play(this.pos);
+    G.system.sfx.hit.play(this.pos);
   }
 
   drawShip() {
     drawTile(
       this.pos,
       this.size,
-      tile(this.currentFrame, G.tileSize * 2, G.tileSheets["ships"]),
+      tile(this.currentFrame, G.system.tileSize * 2, G.system.tileSheets["ships"]),
       undefined,
       this.angle
     );

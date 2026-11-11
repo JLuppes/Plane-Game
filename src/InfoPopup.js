@@ -8,7 +8,7 @@ export class InfoPopup {
     pos = vec2(0, 0),
     size = 1,
     duration = 2,
-    color = G.cols.red,
+    color = G.system.cols.red,
     lineWidth = 0.2,
     followPlayer = false,
     displayType = "default"
