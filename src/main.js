@@ -57,6 +57,8 @@ const G = {
   playerLives: 1,
   playerDamage: 1,
   invincibleTime: 3,
+  mouseEnabled: true,
+  alternateMouseControl: true,
   cols: {
     white: new Color().setHex("#ffffff"),
     red: new Color().setHex("#ff0000"),
@@ -298,13 +300,27 @@ class Player extends EngineObject {
   }
 
   handleInput() {
-    let mouseEnabled = true;
-    let alternateMouseControl = true;
     let mouseDir = vec2(
       mousePos.x - this.pos.x,
       mousePos.y - this.pos.y,
     ).normalize();
+    if (G.alternateMouseControl) setCursor("none");
 
+    if (keyWasPressed("KeyM")) {
+      if (G.mouseEnabled && G.alternateMouseControl) {
+        G.mouseEnabled = true;
+        G.alternateMouseControl = false;
+        setCursor("crosshair");
+      } else if (G.mouseEnabled && !G.alternateMouseControl) {
+        setCursor("none");
+        G.mouseEnabled = false;
+        G.alternateMouseControl = false;
+      } else {
+        setCursor("default");
+        G.mouseEnabled = true;
+        G.alternateMouseControl = true;
+      }
+    }
     if (
       keyIsDown("ArrowLeft") ||
       keyIsDown("ArrowRight") ||
@@ -315,7 +331,7 @@ class Player extends EngineObject {
       G.sfx.fly.play(this.pos);
     }
 
-    if (!alternateMouseControl && mouseEnabled && mouseInWindow) {
+    if (!G.alternateMouseControl && G.mouseEnabled && mouseInWindow) {
       const mouseBuffer = 1.5;
       if (mousePos.distance(this.pos) > mouseBuffer) {
         this.velocity.x += 0.01 * mouseDir.x;
@@ -323,8 +339,7 @@ class Player extends EngineObject {
       }
     }
 
-    if (alternateMouseControl && mouseEnabled && mouseInWindow) {
-      setCursor("none");
+    if (G.alternateMouseControl && G.mouseEnabled && mouseInWindow) {
       this.pos = mousePos;
     }
 
