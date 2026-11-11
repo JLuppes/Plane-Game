@@ -48,8 +48,8 @@ const G = {
   height: 30,
   // Size of one tile in screen pixels
   tileSize: 16,
-  tileSheets: { ships: 0, general: 1 },
-  tiles: ["/ships.png", "/tiles.png"],
+  tileSheets: { ships: 0, general: 1, input: 2 },
+  tiles: ["/ships.png", "/tiles.png", "/input.png"],
   slowdownFactor: 0.03,
   powerupCooldown: 2.0,
   currentHeldPowerUp: {},
@@ -59,6 +59,7 @@ const G = {
   invincibleTime: 3,
   mouseEnabled: true,
   alternateMouseControl: true,
+  showControls: true,
   cols: {
     white: new Color().setHex("#ffffff"),
     red: new Color().setHex("#ff0000"),
@@ -220,11 +221,21 @@ function gameRenderPost() {
 
   // Currently Held Powerup UI Display
   let powerupFrameStartPos = cameraPos.copy().add(vec2(7, -13));
+  // Button Display
+  if (G.showControls) {
+    drawTile(
+      vec2(powerupFrameStartPos.x, powerupFrameStartPos.y + 2),
+      vec2(1.5),
+      tile(87, G.tileSize, G.tileSheets["input"]),
+    );
+  }
+  // Frame
   drawTile(
     powerupFrameStartPos,
     vec2(2.5),
     tile(27, G.tileSize, G.tileSheets["general"]),
   );
+  // Current Powerup
   if (G.currentHeldPowerUp.tileData) {
     drawTile(powerupFrameStartPos, vec2(1.5), G.currentHeldPowerUp.tileData);
   }
@@ -437,7 +448,7 @@ class Player extends EngineObject {
         // pause
       }
       t.pos.y -= G.speed;
-      return t.pos.y >= (-G.height / 2) - 3;
+      return t.pos.y >= -G.height / 2 - 3;
     });
   }
 
