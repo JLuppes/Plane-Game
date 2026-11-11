@@ -218,17 +218,10 @@ function gameUpdate() {
     );
 
     if (G.system.logPulse.elapsed()) {
-      console.log(
-        "Remaining effects: " +
-          (G.system.currentActiveEffects.length > 0
-            ? G.system.currentActiveEffects
-            : "None"),
-      );
       for (let thisEffect in G.system.currentActiveEffects) {
         console.log(
           "Active effect: " + G.system.currentActiveEffects[thisEffect].name,
         );
-        console.log(G.system.currentActiveEffects[thisEffect]);
       }
       G.system.logPulse.set(G.system.logPulseTime);
     }
