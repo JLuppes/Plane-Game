@@ -4,6 +4,7 @@
     "priority": 1,
     "frame": 24,
     "spriteSheet": "general",
+    "autoUse": true,
     "gamePropertyOverwrites": {},
     "gamePropertyAdditions": { "playerLives": 1 }
   },
