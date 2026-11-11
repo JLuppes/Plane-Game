@@ -625,7 +625,11 @@ class PowerUp extends EngineObject {
     console.log("Picked up Powerup: " + this.name);
     particleEffect("magic", this.pos).emitTime = 0.1;
     G.score += this.pointValue;
-    G.currentHeldPowerUp = this;
+    if (this.powerupData.autoUse) {
+      this.usePowerup();
+    } else {
+      G.currentHeldPowerUp = this;
+    }
     super.destroy();
   }
 
@@ -637,7 +641,9 @@ class PowerUp extends EngineObject {
       this.applyAdditions();
       super.destroy();
     }
-    G.currentHeldPowerUp = {};
+    if (!this.powerupData.autoUse) {
+      G.currentHeldPowerUp = {};
+    }
   }
 
   applyOverwrites() {
