@@ -160,7 +160,7 @@ export class Player extends EngineObject {
 
     this.trail.push(particleEffect("wave", this.pos.copy()));
     this.trail = this.trail.filter((t) => {
-      if (G.player.crashed) {
+      if (G.system.player.crashed) {
         // pause
       }
       t.pos.y -= G.speed;

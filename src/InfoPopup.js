@@ -14,7 +14,7 @@ export class InfoPopup {
     displayType = "default"
   ) {
     this.text = text;
-    this.pos = followPlayer ? G.player.pos : pos;
+    this.pos = followPlayer ? G.system.player.pos : pos;
     this.size = size;
     this.duration = duration;
     this.color = color;
@@ -28,7 +28,7 @@ export class InfoPopup {
 
   display() {
     if (this.followPlayer) {
-      this.pos = G.player.pos.copy();
+      this.pos = G.system.player.pos.copy();
     }
     if (this.displayType == "wave") {
       this.displayWave();

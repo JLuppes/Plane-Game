@@ -56,37 +56,37 @@ export const G = {
     mouseEnabled: true,
     alternateMouseControl: true,
     showControls: true,
-  cols: {
-    white: new Color().setHex("#ffffff"),
-    red: new Color().setHex("#ff0000"),
-    sky: new Color().setHex("#cfe7f7"),
-  },
-  sfx: {
-    fly: new Sound([0.25, 0.5, 40, 0.5, , 0.2, , 11, , , , , , 199]),
-    hit: new Sound([
-      2.1,
-      ,
-      156,
-      0.01,
-      0.01,
-      0.3,
-      2,
-      0.6,
-      ,
-      ,
-      ,
-      ,
-      ,
-      1.3,
-      ,
-      0.2,
-      0.14,
-      0.45,
-      0.01,
-      ,
-      150,
-    ]),
-  },
+    cols: {
+      white: new Color().setHex("#ffffff"),
+      red: new Color().setHex("#ff0000"),
+      sky: new Color().setHex("#cfe7f7"),
+    },
+    sfx: {
+      fly: new Sound([0.25, 0.5, 40, 0.5, , 0.2, , 11, , , , , , 199]),
+      hit: new Sound([
+        2.1,
+        ,
+        156,
+        0.01,
+        0.01,
+        0.3,
+        2,
+        0.6,
+        ,
+        ,
+        ,
+        ,
+        ,
+        1.3,
+        ,
+        0.2,
+        0.14,
+        0.45,
+        0.01,
+        ,
+        150,
+      ]),
+    },
   },
   score: 0,
   slowdownFactor: 0.03,
@@ -94,6 +94,7 @@ export const G = {
   playerLives: 1,
   playerDamage: 1,
   invincibleTime: 3,
+  invincibleTimer: new Timer(),
 };
 
 // Particles: https://killedbyapixel.github.io/LittleJS/examples/particles/
@@ -136,7 +137,7 @@ function gameInit() {
 
   engineObjectsDestroy();
 
-  G.player = new Player(G);
+  G.system.player = new Player(G);
 
   G.speed = 0.1;
 
@@ -164,8 +165,8 @@ function gameUpdate() {
   }
 
   if (
-    G.player.crashed &&
-    time > G.player.crashed + 2 &&
+    G.system.player.crashed &&
+    time > G.system.player.crashed + 2 &&
     (mouseWasPressed(0) || keyWasPressed("Space"))
   ) {
     gameInit();
@@ -278,7 +279,7 @@ function gameRenderPost() {
       livesStartPos.add(vec2(i * 1.75, 0)),
       vec2(2.5),
       tile(
-        G.player.currentFrame,
+        G.system.player.currentFrame,
         G.system.tileSize * 2,
         G.system.tileSheets["ships"],
       ),
@@ -286,7 +287,7 @@ function gameRenderPost() {
   }
 
   // Game Over Screen
-  if (G.player.crashed && Math.sin(time * 5) > 0) {
+  if (G.system.player.crashed && Math.sin(time * 5) > 0) {
     drawText("GAME OVER", vec2(0, 0), 2, G.system.cols.red, 0.5);
   }
 

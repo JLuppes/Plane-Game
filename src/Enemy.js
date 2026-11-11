@@ -49,7 +49,7 @@ export class Enemy extends EngineObject {
     if (this.health <= 0) {
       this.dead = true;
       this.explode();
-      G.player.gainScore(this.scoreValue);
+      G.system.player.gainScore(this.scoreValue);
     }
   }
 
