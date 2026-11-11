@@ -9,15 +9,6 @@
     "gamePropertyAdditions": { "playerLives": 1 }
   },
   {
-    "name": "Powershot",
-    "priority": 2,
-    "frame": 25,
-    "duration": 3,
-    "spriteSheet": "general",
-    "gamePropertyOverwrites": {},
-    "gamePropertyAdditions": { "playerDamage": 1 }
-  },
-  {
     "name": "SlowMo",
     "priority": 2,
     "frame": 28,

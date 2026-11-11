@@ -34,7 +34,7 @@ export const playerSize = 2.5;
 
 const listOfPowerups = (
   await Promise.all(
-    ["default"].map((n) =>
+    ["default", "custom"].map((n) =>
       engineAddLoad(fetchJSON(`./data/powerups/${n}.json`)),
     ),
   )
