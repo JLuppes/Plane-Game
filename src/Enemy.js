@@ -1,4 +1,10 @@
-import { EngineObject, vec2, tile, particleEffect } from "littlejsengine";
+import {
+  EngineObject,
+  vec2,
+  tile,
+  particleEffect,
+  clamp,
+} from "littlejsengine";
 import { G } from "./main";
 
 export class Enemy extends EngineObject {
@@ -6,8 +12,16 @@ export class Enemy extends EngineObject {
     let x = game.system.width / 2;
     let y = game.system.height / 2 + 3;
     let pos = vec2(rand(-x, x), y);
+    let vel = vec2(0);
     let startHealth = 2;
     let scoreValue = 10;
+    let chasePlayer = true;
+    let chaseStyle = "chase";
+    let shootPlayer = true;
+    let shootStyle = "straight";
+    let handleSpeed = 1;
+    let maxXSpeed = 1;
+    let shootPattern = [.1, .1, .1, 3]
 
     let frame = 8;
     super(
@@ -18,17 +32,65 @@ export class Enemy extends EngineObject {
     this.angle = Math.PI;
     this.game = game;
 
+    // edge of screen left/right
+    this.minX = (game.system.width - 2) / -2;
+    this.maxX = (game.system.width - 2) / 2;
+
+    this.minY = (game.system.height - 2) / -2;
+    this.maxY = (game.system.height + -100) / 2;
+
     this.setCollision(true, false, false, false);
     this.drawSize = vec2(2);
+    this.velocity = vel;
     this.gameType = "enemy";
     this.health = startHealth;
     this.dead = false;
     this.scoreValue = scoreValue;
+    this.chasePlayer = chasePlayer;
+    this.shootPlayer = true;
+    this.handleSpeed = handleSpeed;
+    this.chaseStyle = chaseStyle;
+    this.maxXSpeed = maxXSpeed * 0.1;
+    // this.clampSpeed = true;
   }
 
   update() {
     super.update();
-    this.pos.y -= this.game.speed;
+    if (this.chasePlayer && this.chaseStyle == "chase") {
+      let xDif = this.pos.x - G.system.player.pos.x;
+      this.velocity.x += xDif * this.handleSpeed * -0.001;
+      console.log("enemy xvel = " + this.velocity.x);
+      this.velocity.y = this.game.speed;
+    } else {
+      this.velocity.y = this.game.speed;
+    }
+
+    this.velocity.x = clamp(this.velocity.x, -1 * this.maxXSpeed, this.maxXSpeed);
+
+    this.pos.x += this.velocity.x;
+    this.pos.y -= this.velocity.y;
+
+    if (this.pos.x <= this.minX || this.pos.x >= this.maxX) {
+      this.velocity.x = 0;
+    }
+    if (this.pos.y <= this.minY || this.pos.y >= this.maxY) {
+      this.velocity.y = 0;
+    }
+
+    if (this.pos.x <= this.minX) {
+      this.pos.x += 0.01;
+    }
+
+    if (this.pos.x >= this.maxX) {
+      this.pos.x -= 0.01;
+    }
+    if (this.pos.y <= this.minY) {
+      this.pos.y += 0.01;
+    }
+
+    if (this.pos.y >= this.maxY) {
+      this.pos.y -= 0.01;
+    }
 
     if (this.crashed) return;
 
