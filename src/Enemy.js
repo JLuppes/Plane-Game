@@ -4,8 +4,10 @@ import {
   tile,
   particleEffect,
   clamp,
+  Timer,
 } from "littlejsengine";
 import { G } from "./main";
+import { Bullet } from "./Bullet";
 
 export class Enemy extends EngineObject {
   constructor(game) {
@@ -21,7 +23,10 @@ export class Enemy extends EngineObject {
     let shootStyle = "straight";
     let handleSpeed = 1;
     let maxXSpeed = 1;
-    let shootPattern = [.1, .1, .1, 3]
+    let shootPattern = [0.2, 0.2, 2];
+    let shootDamage = .5;
+    let crashDamage = 1;
+    let bulletSpeed = 0.3;
 
     let frame = 8;
     super(
@@ -51,21 +56,34 @@ export class Enemy extends EngineObject {
     this.handleSpeed = handleSpeed;
     this.chaseStyle = chaseStyle;
     this.maxXSpeed = maxXSpeed * 0.1;
-    // this.clampSpeed = true;
+    this.shootTimer = new Timer(shootPattern[0]);
+    this.shootCounter = 0;
+    this.shootPattern = shootPattern;
+    this.shootDamage = shootDamage;
+    this.crashDamage = crashDamage;
+    this.bulletSpeed = bulletSpeed;
   }
 
   update() {
     super.update();
+    if (this.crashed || this.game.system.player.crashed) {
+      this.velocity.x = 0;
+      this.velocity.y = 0;
+      return;
+    }
     if (this.chasePlayer && this.chaseStyle == "chase") {
       let xDif = this.pos.x - G.system.player.pos.x;
       this.velocity.x += xDif * this.handleSpeed * -0.001;
-      console.log("enemy xvel = " + this.velocity.x);
       this.velocity.y = this.game.speed;
     } else {
       this.velocity.y = this.game.speed;
     }
 
-    this.velocity.x = clamp(this.velocity.x, -1 * this.maxXSpeed, this.maxXSpeed);
+    this.velocity.x = clamp(
+      this.velocity.x,
+      -1 * this.maxXSpeed,
+      this.maxXSpeed,
+    );
 
     this.pos.x += this.velocity.x;
     this.pos.y -= this.velocity.y;
@@ -92,13 +110,33 @@ export class Enemy extends EngineObject {
       this.pos.y -= 0.01;
     }
 
-    if (this.crashed) return;
+    let shouldShoot = true;
+
+    if (shouldShoot) {
+      if (this.shootTimer.elapsed()) {
+        let newTime = this.shoot();
+        this.shootTimer.set(newTime);
+      }
+    }
 
     //remove object when past bottom of screen
-    if (this.pos.y < this.game.heigh / -2) {
+    if (this.pos.y < this.game.height / -2) {
       super.destroy();
     }
   }
+
+  shoot() {
+    particleEffect("muzzle", vec2(this.pos.x - 0.6, this.pos.y - 0.55), {
+      scale: 0.3,
+    });
+
+    new Bullet(this.game, this, this.bulletSpeed, 1);
+
+    let newWaitTime =
+      this.shootPattern[this.shootCounter++ % this.shootPattern.length];
+    return newWaitTime;
+  }
+
   collideWithObject(o) {
     if (o.gameType == "bullet" && o.gameSource == "player") {
       this.takeDamage(o.damage);

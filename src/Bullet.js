@@ -2,36 +2,41 @@ import { EngineObject, vec2, tile } from "littlejsengine";
 import { G } from "./main";
 
 export class Bullet extends EngineObject {
-  constructor(game, source) {
+  constructor(game, source, speed = 1, frame = 1, tileSheet = "general") {
     let x = game.system.width / 2;
     let y = game.system.height / 2 + 3;
     let sourcePos = source.pos.copy();
-    let pos = vec2(sourcePos.x, sourcePos.y + 0.2);
+    let pos =
+      source.gameType == "player"
+        ? vec2(sourcePos.x, sourcePos.y + 0.2)
+        : vec2(sourcePos.x, sourcePos.y - 0.2);
     let angle = source.angle;
-    let bulletSpeed = 1;
-    let bulletDamage = G.playerDamage;
-
-    let frame = 1;
+    let bulletSpeed = speed;
+    let bulletDamage =
+      source.gameType == "player" ? G.playerDamage : source.shootDamage || 1;
+    let bulletTileSheet = tileSheet;
+    let bulletFrame = frame;
     super(
       pos,
       vec2(1.8),
-      tile(frame, game.system.tileSize, G.system.tileSheets["general"]),
+      tile(frame, game.system.tileSize, G.system.tileSheets[bulletTileSheet]),
     );
-    this.angle = Math.PI;
+    this.angle = angle;
     this.game = game;
 
     this.setCollision(true, true, false, false);
     this.drawSize = vec2(2).multiply(vec2(bulletDamage));
     this.speed = vec2(Math.sin(angle), Math.cos(angle));
     this.gameType = "bullet";
-    this.gameSource = "player";
+    this.gameSource = source.gameType;
     this.damage = bulletDamage;
+    this.bulletSpeed = bulletSpeed;
   }
 
   collideWithObject(o) {
     super.collideWithObject(o);
-
-    if (o.gameType == "enemy") {
+    const friendlyFire = this.gameSource.gameType != o.gameType;
+    if (!friendlyFire) {
       super.destroy();
     }
   }
@@ -39,7 +44,7 @@ export class Bullet extends EngineObject {
   update() {
     super.update();
 
-    this.pos.x += this.speed.x;
-    this.pos.y += this.speed.y;
+    this.pos.x += this.speed.x * this.bulletSpeed;
+    this.pos.y += this.speed.y * this.bulletSpeed;
   }
 }

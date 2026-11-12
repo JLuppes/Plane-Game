@@ -136,7 +136,7 @@ export class Player extends EngineObject {
     if (time - this.lastShot > this.reloadTime) {
       LOG("Pew!");
 
-      this.bullets.push(new Bullet(G, this));
+      this.bullets.push(new Bullet(G, this, 1, 12));
 
       particleEffect("muzzle", vec2(this.pos.x - 0.6, this.pos.y + 0.55), {
         scale: 0.3,
@@ -215,7 +215,9 @@ export class Player extends EngineObject {
 
     if (this.crashed) return;
     if (o.gameType == "enemy") {
-      this.takeHit(1);
+      this.takeHit(o.crashDamage);
+    } else if (o.gameType == "bullet" && o.gameSource == "enemy") {
+      this.takeHit(o.damage);
     }
   }
   takeHit(damageAmount = 1) {
