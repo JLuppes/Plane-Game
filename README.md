@@ -4,9 +4,15 @@ This is a game built in JavaScript using the LittleJS game engine, deployed thro
 
 The purpose is to demonstrate JavaScript coding syntax, web development and app deployment, and configuration as code via JSON customizations.
 
+![alt text](screenshot.png)
+
 ## Custom Powerups and Enemies
 
 You can add custom powerups and enemies to the game by adding additional JSON objects to the files in the data folder before building. More documentation on how to build these is coming, but for now just try to match the structure provided in the `default.json` files.
+
+Custom Particle Effects generated [here](https://killedbyapixel.github.io/LittleJS/examples/particles/)
+
+Custom Sounds generated [here](https://killedbyapixel.github.io/ZzFX/)
 
 ## Run the game locally
 
