@@ -10,29 +10,32 @@ import { G } from "./main";
 import { Bullet } from "./Bullet";
 
 export class Enemy extends EngineObject {
-  constructor(game) {
+  constructor(game, enemyData = {}) {
     let x = game.system.width / 2;
     let y = game.system.height / 2 + 3;
     let pos = vec2(rand(-x, x), y);
     let vel = vec2(0);
-    let startHealth = 2;
-    let scoreValue = 10;
-    let chasePlayer = true;
-    let chaseStyle = "chase";
-    let shootPlayer = true;
-    let shootStyle = "straight";
-    let handleSpeed = 1;
-    let maxXSpeed = 1;
-    let shootPattern = [0.2, 0.2, 2];
-    let shootDamage = .5;
-    let crashDamage = 1;
-    let bulletSpeed = 0.3;
+    let name = enemyData.enemyName || "Enemy Plane";
+    let size = enemyData.enemySize || 1;
+    let startHealth = enemyData.startHealth || 2;
+    let scoreValue = enemyData.scoreValue || 10;
+    let chasePlayer = enemyData.chasePlayer || true;
+    let chaseStyle = enemyData.chaseStyle || "chase";
+    let shootPlayer = enemyData.shootPlayer || true;
+    let shootStyle = enemyData.shootStyle || "straight";
+    let handleSpeed = enemyData.handleSpeed || 1;
+    let maxXSpeed = enemyData.maxXSpeed || 1;
+    let shootPattern = enemyData.shootPattern || [0.2, 0.2, 2];
+    let shootDamage = enemyData.shootDamage || 0.5;
+    let crashDamage = enemyData.crashDamage || 1;
+    let bulletSpeed = enemyData.bulletSpeed || 0.3;
 
-    let frame = 8;
+    let frame = enemyData.frame || 8;
+    let tileSheet = enemyData.tileSheet || "ships";
     super(
       pos,
-      vec2(0.5),
-      tile(frame, game.system.tileSize * 2, G.system.tileSheets["ships"]),
+      vec2(size * 0.5),
+      tile(frame, game.system.tileSize * 2, G.system.tileSheets[tileSheet]),
     );
     this.angle = Math.PI;
     this.game = game;
@@ -44,6 +47,7 @@ export class Enemy extends EngineObject {
     this.minY = (game.system.height - 2) / -2;
     this.maxY = (game.system.height + -100) / 2;
 
+    this.name = name;
     this.setCollision(true, false, false, false);
     this.drawSize = vec2(2);
     this.velocity = vel;
@@ -62,6 +66,7 @@ export class Enemy extends EngineObject {
     this.shootDamage = shootDamage;
     this.crashDamage = crashDamage;
     this.bulletSpeed = bulletSpeed;
+    this.met = new Set();
   }
 
   update() {
@@ -138,9 +143,14 @@ export class Enemy extends EngineObject {
   }
 
   collideWithObject(o) {
-    if (o.gameType == "bullet" && o.gameSource == "player") {
+    if (
+      o.gameType == "bullet" &&
+      o.gameSource == "player" &&
+      !this.met.has(o)
+    ) {
       this.takeDamage(o.damage);
     }
+    this.met.add(o);
   }
 
   takeDamage(amount) {

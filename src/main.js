@@ -33,10 +33,21 @@ import { Enemy } from "./Enemy";
 export const playerFrame = 5;
 export const playerSize = 2.5;
 
+const listOfPowerupFiles = ["default", "custom"];
+const listOfEnemiesFiles = ["default", "custom"];
+
 const listOfPowerups = (
   await Promise.all(
-    ["default", "custom"].map((n) =>
+    listOfPowerupFiles.map((n) =>
       engineAddLoad(fetchJSON(`./data/powerups/${n}.json`)),
+    ),
+  )
+).flat();
+
+const listOfEnemies = (
+  await Promise.all(
+    listOfEnemiesFiles.map((n) =>
+      engineAddLoad(fetchJSON(`./data/enemies/${n}.json`)),
     ),
   )
 ).flat();
@@ -110,6 +121,7 @@ export const G = {
   playerLives: 1,
   playerDamage: 1,
   invincibleTime: 3,
+  friendlyFire: false,
 };
 
 // Particles: https://killedbyapixel.github.io/LittleJS/examples/particles/
@@ -169,7 +181,9 @@ function gameUpdate() {
 
   // randomly generate enemies
   if (rand() > 1 - 0.01 * G.enemySpawnRate) {
-    new Enemy(G);
+    const selectedEnemy = randPick(listOfEnemies);
+    console.log("Spawning enemy: " + selectedEnemy.enemyName);
+    new Enemy(G, selectedEnemy);
   }
 
   // randomly generate powerups
