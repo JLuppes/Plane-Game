@@ -343,6 +343,19 @@ function gameRenderPost() {
     drawText("GAME OVER", vec2(0, 0), 2, G.system.cols.red, 0.5);
   }
 
+  if (
+    G.system.player.crashed &&
+    time > G.system.player.crashed + G.system.respawnWaitTime
+  ) {
+    drawText(
+      "Click/Space to Play Again",
+      vec2(0, -4),
+      1.0,
+      G.system.cols.red,
+      0.5,
+    );
+  }
+
   // Controls Display
   if (G.system.showControls) {
     const mouseControlsStartPos = vec2(
