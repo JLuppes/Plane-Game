@@ -35,7 +35,6 @@ export const playerSize = 2.5;
 
 const listOfPowerupFiles = ["default", "custom"];
 const listOfEnemiesFiles = ["default", "custom"];
-
 const listOfPowerups = (
   await Promise.all(
     listOfPowerupFiles.map((n) =>
@@ -60,7 +59,11 @@ export const G = {
     height: 30,
     tileSize: 16,
     tileSheets: { ships: 0, general: 1, input: 2 },
-    tiles: ["/ships.png", "/tiles.png", "/input.png"],
+    tiles: [
+      "./src/data/tiles/ships.png",
+      "./src/data/tiles/tiles.png",
+      "./src/data/tiles/input.png",
+    ],
     currentHeldPowerUp: {},
     currentActiveEffects: [],
     infoPopups: [],
@@ -374,7 +377,7 @@ function gameRenderPost() {
 }
 
 // fires up LittleJS with all necessary functions and tiles
-await engineAddLoad(particleEffectsLoad("particleEffects.json"));
+await engineAddLoad(particleEffectsLoad("./src/data/particles/particleEffects.json"));
 engineInit(
   gameInit,
   gameUpdate,
