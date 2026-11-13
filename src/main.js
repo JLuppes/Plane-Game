@@ -29,28 +29,29 @@ import { Player } from "./Player";
 import { PowerUp } from "./PowerUp";
 import { Bullet } from "./Bullet";
 import { Enemy } from "./Enemy";
+import tilesURL from "./data/tiles/tiles.png";
+import shipsURL from "./data/tiles/ships.png";
+import inputURL from "./data/tiles/input.png";
+import powerupsDefaultData from "./data/powerups/default.json";
+import enemiesDefaultData from "./data/enemies/default.json";
+import particleEffectsData from "./data/particles/particleEffects.json";
 
 export const playerFrame = 5;
 export const playerSize = 2.5;
 
-const listOfPowerupFiles = ["default", "custom"];
-const listOfEnemiesFiles = ["default", "custom"];
 const listOfPowerups = (
-  await Promise.all(
-    listOfPowerupFiles.map((n) =>
-      engineAddLoad(fetchJSON(`./src/data/powerups/${n}.json`)),
-    ),
-  )
+  await Promise.all([
+    engineAddLoad(powerupsDefaultData),
+    engineAddLoad(fetchJSON(`./customPowerups.json`)),
+  ])
 ).flat();
 
 const listOfEnemies = (
-  await Promise.all(
-    listOfEnemiesFiles.map((n) =>
-      engineAddLoad(fetchJSON(`./src/data/enemies/${n}.json`)),
-    ),
-  )
+  await Promise.all([
+    engineAddLoad(enemiesDefaultData),
+    engineAddLoad(fetchJSON(`./customEnemies.json`)),
+  ])
 ).flat();
-// setTileDefaultPadding(1);
 
 export const G = {
   system: {
@@ -59,11 +60,7 @@ export const G = {
     height: 30,
     tileSize: 16,
     tileSheets: { ships: 0, general: 1, input: 2 },
-    tiles: [
-      "./src/data/tiles/ships.png",
-      "./src/data/tiles/tiles.png",
-      "./src/data/tiles/input.png",
-    ],
+    tiles: [shipsURL, tilesURL, inputURL],
     currentHeldPowerUp: {},
     currentActiveEffects: [],
     infoPopups: [],
@@ -126,9 +123,6 @@ export const G = {
   invincibleTime: 3,
   friendlyFire: false,
 };
-
-// Particles: https://killedbyapixel.github.io/LittleJS/examples/particles/
-// Sounds: https://killedbyapixel.github.io/ZzFX/
 
 // called once after the engine starts up
 function gameInit() {
@@ -377,7 +371,7 @@ function gameRenderPost() {
 }
 
 // fires up LittleJS with all necessary functions and tiles
-await engineAddLoad(particleEffectsLoad("./src/data/particles/particleEffects.json"));
+await engineAddLoad(particleEffectsLoad("./particleEffects.json"));
 engineInit(
   gameInit,
   gameUpdate,
