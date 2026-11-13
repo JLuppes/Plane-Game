@@ -170,6 +170,8 @@ export class PowerUp extends EngineObject {
 
   update() {
     super.update();
-    this.pos.y -= this.speedFactor * G.speed;
+    if (!this.game.system.player.crashed) {
+      this.pos.y -= this.speedFactor * G.speed;
+    }
   }
 }

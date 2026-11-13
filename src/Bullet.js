@@ -50,7 +50,9 @@ export class Bullet extends EngineObject {
   update() {
     super.update();
 
-    this.pos.x += this.speed.x * this.bulletSpeed;
-    this.pos.y += this.speed.y * this.bulletSpeed;
+    if (!this.game.system.player.crashed) {
+      this.pos.x += this.speed.x * this.bulletSpeed;
+      this.pos.y += this.speed.y * this.bulletSpeed;
+    }
   }
 }
