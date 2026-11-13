@@ -38,7 +38,10 @@ export class Bullet extends EngineObject {
 
     const shouldDestroy =
       (this.gameSource == "enemy" && o.gameType == "player") ||
-      (this.gameSource == "player" && o.gameType == "enemy");
+      (this.gameSource == "player" && o.gameType == "enemy") ||
+      (this.gamesource == "enemy" &&
+        o.gameType == "enemy" &&
+        this.game.friendlyFire);
     if (shouldDestroy) {
       super.destroy();
     }

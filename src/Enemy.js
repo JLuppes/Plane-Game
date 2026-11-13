@@ -145,7 +145,8 @@ export class Enemy extends EngineObject {
   collideWithObject(o) {
     if (
       o.gameType == "bullet" &&
-      o.gameSource == "player" &&
+      (o.gameSource == "player" ||
+        (o.gameSource == "enemy" && this.game.friendlyFire)) &&
       !this.met.has(o)
     ) {
       this.takeDamage(o.damage);
