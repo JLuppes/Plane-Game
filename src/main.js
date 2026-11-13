@@ -39,7 +39,7 @@ const listOfEnemiesFiles = ["default", "custom"];
 const listOfPowerups = (
   await Promise.all(
     listOfPowerupFiles.map((n) =>
-      engineAddLoad(fetchJSON(`./data/powerups/${n}.json`)),
+      engineAddLoad(fetchJSON(`./src/data/powerups/${n}.json`)),
     ),
   )
 ).flat();
@@ -47,7 +47,7 @@ const listOfPowerups = (
 const listOfEnemies = (
   await Promise.all(
     listOfEnemiesFiles.map((n) =>
-      engineAddLoad(fetchJSON(`./data/enemies/${n}.json`)),
+      engineAddLoad(fetchJSON(`./src/data/enemies/${n}.json`)),
     ),
   )
 ).flat();
