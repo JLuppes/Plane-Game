@@ -10,9 +10,9 @@ The purpose is to demonstrate JavaScript coding syntax, web development and app 
 
 You can add custom powerups and enemies to the game by adding additional JSON objects to the files in the data folder before building. More documentation on how to build these is coming, but for now just try to match the structure provided in the `default.json` files.
 
-Custom Particle Effects generated [here](https://killedbyapixel.github.io/LittleJS/examples/particles/)
+[LittleJS Custom Particle Effects Generator](https://killedbyapixel.github.io/LittleJS/examples/particles/)
 
-Custom Sounds generated [here](https://killedbyapixel.github.io/ZzFX/)
+[LittleJS Custom Sounds Generator](https://killedbyapixel.github.io/ZzFX/)
 
 ## Run the game locally
 
@@ -34,16 +34,6 @@ npm run preview   # preview the production build
 ```
 
 See the [Vite docs](https://vite.dev) for more.
-
-## Assets
-
-Files in `public/` are served from the site root in dev and copied as-is to `dist/` on build. The tilesheets live there, which is why `engineInit(..., ['tiles.png'])` works in both dev and the built output.
-
-For assets you want Vite to hash and bundle (the usual case for large projects), import them from `src/` instead:
-
-```js
-import tilesURL from "./tiles.png";
-```
 
 ## Deploying
 
