@@ -174,10 +174,10 @@ function gameUpdate() {
 
   G.score += G.speed * (G.speedScoreFactor / 5);
 
-  G.speed += G.speed * (G.speedIncreaseFactor * 0.0001);
+  G.speed += G.speed * (G.speedIncreaseFactor * 0.0005);
 
   // randomly generate enemies
-  if (rand() > 1 - 0.01 * G.enemySpawnRate) {
+  if (rand() > 1 - 0.006 * G.enemySpawnRate) {
     const selectedEnemy = randPick(listOfEnemies);
     console.log("Spawning enemy: " + selectedEnemy.enemyName);
     new Enemy(G, selectedEnemy);
@@ -185,7 +185,7 @@ function gameUpdate() {
 
   // randomly generate powerups
   if (
-    rand() > 1 - 0.1 * G.powerupSpawnRate &&
+    rand() > 1 - 0.005 * G.powerupSpawnRate &&
     G.system.powerupTimer.elapsed()
   ) {
     const powerUpChoice = randPick(listOfPowerups);
