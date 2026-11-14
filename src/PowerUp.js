@@ -40,11 +40,13 @@ export class PowerUp extends EngineObject {
   startUp() {
     this.applyOverwrites();
     this.applyAdditions();
+    this.applyMultipliers();
   }
 
   shutDown() {
     this.removeOverwrites();
     this.removeAdditions();
+    this.removeMultipliers();
     this.destroy();
   }
 
@@ -69,6 +71,7 @@ export class PowerUp extends EngineObject {
     } else {
       this.applyOverwrites();
       this.applyAdditions();
+      this.applyMultipliers();
       super.destroy();
     }
     if (!this.powerupData.autoUse) {
@@ -143,6 +146,30 @@ export class PowerUp extends EngineObject {
       }
     }
   }
+  applyMultipliers() {
+    if (this.powerupData.gamePropertyMultipliers) {
+      for (let key in this.powerupData.gamePropertyMultipliers) {
+        if (key.includes("system")) {
+          console.log(
+            `System key ${key} found in powerup ${this.powerupData.name}!\nCancelling usage.`,
+          );
+          continue;
+        }
+        let keyData = this.powerupData.gamePropertyMultipliers[key];
+        console.log(
+          `Powerup "${this.name}" found multiplier x${keyData} for key "${key}": ${this.powerupData.gamePropertyMultipliers[key]}`,
+        );
+        if (G[key] != null) {
+          G[key] = G[key] * keyData;
+          console.log(
+            `Game property "${key}" multiplied by ${keyData} to: ${G[key]}`,
+          );
+        } else {
+          console.log("No key found with name: " + key);
+        }
+      }
+    }
+  }
 
   removeAdditions() {
     console.log("Removing addition:");
@@ -155,6 +182,25 @@ export class PowerUp extends EngineObject {
         if (G[key] != null) {
           G[key] = G[key] - keyData;
           console.log(`Game property "${key}" set to: ${G[key]}`);
+        } else {
+          console.log("No key found with name: " + key);
+        }
+      }
+    }
+  }
+  removeMultipliers() {
+    console.log("Removing multiplier:");
+    if (this.powerupData.gamePropertyMultipliers) {
+      for (let key in this.powerupData.gamePropertyMultipliers) {
+        let keyData = this.powerupData.gamePropertyMultipliers[key];
+        console.log(
+          `Powerup "${this.name}" removing addition for key "${key}": ${this.powerupData.gamePropertyMultipliers[key]}`,
+        );
+        if (G[key] != null) {
+          G[key] = G[key] / keyData;
+          console.log(
+            `Game property "${key}" multiplier removed, divided by ${keyData} to: ${G[key]}`,
+          );
         } else {
           console.log("No key found with name: " + key);
         }

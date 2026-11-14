@@ -16,5 +16,15 @@
     "duration": 5,
     "gamePropertyOverwrites": { "speed": 0.05 },
     "gamePropertyAdditions": {}
+  },
+  {
+    "name": "Double Lives",
+    "priority": 2,
+    "frame": 17,
+    "spriteSheet": "general",
+    "autoUse": true,
+    "gamePropertyOverwrites": {},
+    "gamePropertyAdditions": {},
+    "gamePropertyMultipliers": { "playerLives": 2 }
   }
 ]

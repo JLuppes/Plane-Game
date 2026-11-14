@@ -36,9 +36,6 @@ import powerupsDefaultData from "./data/powerups/default.json";
 import enemiesDefaultData from "./data/enemies/default.json";
 import particleEffectsData from "./data/particles/particleEffects.json";
 
-export const playerFrame = 5;
-export const playerSize = 2.5;
-
 const listOfPowerups = (
   await Promise.all([
     engineAddLoad(powerupsDefaultData),
