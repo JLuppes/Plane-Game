@@ -26,11 +26,6 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Add latest tag
-        uses: silverlyra/latest-image-action@v0.1.0
-        with:
-          repository: ${{ github.repository }}
-          candidate-tag: ${{ github.ref_name }}
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
