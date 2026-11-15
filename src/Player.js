@@ -22,7 +22,8 @@ export class Player extends EngineObject {
   constructor(game) {
     let size = G.system.playerSize,
       frame = G.system.playerFrame;
-    super(cameraPos, vec2(size));
+    let startPos = vec2(cameraPos.x + 0, cameraPos.y - 6);
+    super(startPos, vec2(size));
 
     // edge of screen left/right
     this.minX = (game.system.width - 2) / -2;
@@ -48,7 +49,8 @@ export class Player extends EngineObject {
   }
 
   handleInput() {
-    const displayPos = vec2(G.system.center.x, G.system.center.y - 13);
+    // UI Controls
+    const infoDisplayPos = vec2(G.system.center.x, G.system.center.y - 13);
     let mouseDir = vec2(
       mousePos.x - this.pos.x,
       mousePos.y - this.pos.y,
@@ -62,7 +64,7 @@ export class Player extends EngineObject {
         setCursor("crosshair");
         G.system.infoPopups = [];
         G.system.infoPopups.push(
-          new InfoPopup("Mouse Control: Follow", displayPos),
+          new InfoPopup("Mouse Control: Follow", infoDisplayPos),
         );
       } else if (G.system.mouseEnabled && !G.system.alternateMouseControl) {
         setCursor("none");
@@ -70,7 +72,7 @@ export class Player extends EngineObject {
         G.system.alternateMouseControl = false;
         G.system.infoPopups = [];
         G.system.infoPopups.push(
-          new InfoPopup("Mouse Control: Off", displayPos),
+          new InfoPopup("Mouse Control: Off", infoDisplayPos),
         );
       } else {
         setCursor("default");
@@ -78,54 +80,58 @@ export class Player extends EngineObject {
         G.system.alternateMouseControl = true;
         G.system.infoPopups = [];
         G.system.infoPopups.push(
-          new InfoPopup("Mouse Control: Direct", displayPos),
+          new InfoPopup("Mouse Control: Direct", infoDisplayPos),
         );
       }
     }
-    if (
-      keyIsDown("ArrowLeft") ||
-      keyIsDown("ArrowRight") ||
-      keyIsDown("ArrowUp") ||
-      keyIsDown("ArrowDown")
-    ) {
-      particleEffect("dust", vec2(this.pos.x, this.pos.y - 0.9));
-      G.system.sfx.fly.play(this.pos);
-    }
 
-    if (
-      !G.system.alternateMouseControl &&
-      G.system.mouseEnabled &&
-      mouseInWindow
-    ) {
-      const mouseBuffer = 1.5;
-      if (mousePos.distance(this.pos) > mouseBuffer) {
-        this.velocity.x += 0.01 * mouseDir.x;
-        this.velocity.y += 0.0075 * mouseDir.y;
+    // Player Controls
+    if (G.system.gameStarted) {
+      if (
+        keyIsDown("ArrowLeft") ||
+        keyIsDown("ArrowRight") ||
+        keyIsDown("ArrowUp") ||
+        keyIsDown("ArrowDown")
+      ) {
+        particleEffect("dust", vec2(this.pos.x, this.pos.y - 0.9));
+        G.system.sfx.fly.play(this.pos);
       }
-    }
 
-    if (
-      G.system.alternateMouseControl &&
-      G.system.mouseEnabled &&
-      mouseInWindow
-    ) {
-      this.pos = mousePos;
-    }
+      if (
+        !G.system.alternateMouseControl &&
+        G.system.mouseEnabled &&
+        mouseInWindow
+      ) {
+        const mouseBuffer = 1.5;
+        if (mousePos.distance(this.pos) > mouseBuffer) {
+          this.velocity.x += 0.01 * mouseDir.x;
+          this.velocity.y += 0.0075 * mouseDir.y;
+        }
+      }
 
-    this.velocity.x += 0.01 * keyDirection()["x"];
-    this.velocity.y += 0.0075 * keyDirection()["y"];
+      if (
+        G.system.alternateMouseControl &&
+        G.system.mouseEnabled &&
+        mouseInWindow
+      ) {
+        this.pos = mousePos;
+      }
 
-    if (keyWasPressed("KeyR")) {
-      this.changeSkin();
-    }
+      this.velocity.x += 0.01 * keyDirection()["x"];
+      this.velocity.y += 0.0075 * keyDirection()["y"];
 
-    if (keyIsDown("Space") || mouseIsDown(0)) {
-      this.shoot();
-    }
+      if (keyWasPressed("KeyR")) {
+        this.changeSkin();
+      }
 
-    if (keyWasPressed("KeyE")) {
-      if (G.system.currentHeldPowerUp.usePowerup) {
-        G.system.currentHeldPowerUp.usePowerup();
+      if (keyIsDown("Space") || mouseIsDown(0)) {
+        this.shoot();
+      }
+
+      if (keyWasPressed("KeyE")) {
+        if (G.system.currentHeldPowerUp.usePowerup) {
+          G.system.currentHeldPowerUp.usePowerup();
+        }
       }
     }
   }

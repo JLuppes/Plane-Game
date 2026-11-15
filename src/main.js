@@ -52,6 +52,7 @@ const listOfEnemies = (
 
 export const G = {
   system: {
+    active: false,
     // Logical grid size (in tiles)
     width: 20,
     height: 30,
@@ -71,6 +72,7 @@ export const G = {
     playerSize: 2.5,
     invincibleTimer: new Timer(),
     powerupTimer: new Timer(),
+    firstStart: true,
     cols: {
       white: new Color().setHex("#ffffff"),
       red: new Color().setHex("#ff0000"),
@@ -160,12 +162,65 @@ function gameInit() {
 
   G.system.player = new Player(G);
 
-  G.speed = G.startSpeed;
-
   setTileDefaultBleed(0.5);
+
+  if (G.system.firstStart) {
+    let startWaitTime = 3;
+    G.system.readyTimer = new Timer(startWaitTime);
+    G.system.startTime = time;
+    G.system.gameStarted = false;
+    G.speed = 0;
+    G.system.demoEnemyTimer = new Timer(2);
+    G.system.demoEnemyCounter = 0;
+    G.system.demoEnemyList = [];
+  }
+
+  G.speed = G.startSpeed;
+}
+
+function startGame() {
+  console.log("Starting game!");
+  G.system.gameStarted = true;
+  G.system.firstStart = false;
+  G.system.active = true;
+  gameInit();
+}
+
+function randomEnemy() {
+  const selectedEnemy = randPick(listOfEnemies);
+  console.log("Spawning enemy: " + selectedEnemy.enemyName);
+  return new Enemy(G, selectedEnemy);
 }
 
 function gameUpdate() {
+  if (!G.system.gameStarted) {
+    if (G.system.demoEnemyTimer.elapsed()) {
+      console.log("Launching demo enemy...");
+      G.system.demoEnemyList.push(randomEnemy());
+
+      const newDemoEnemy = G.system.demoEnemyList[G.system.demoEnemyCounter];
+      console.log("Updating demo enemy:");
+      console.log(newDemoEnemy);
+      let newX = G.system.width / 2;
+      newDemoEnemy.pos.x = rand(-newX, newX);
+      newDemoEnemy.pos.y = -20;
+      newDemoEnemy.velocity.y = -1;
+      newDemoEnemy.shootPlayer = false;
+      newDemoEnemy.setCollision(false, false, false, false);
+      newDemoEnemy.angle = 0;
+      newDemoEnemy.chasePlayer = false;
+      G.system.demoEnemyTimer.set(2);
+      G.system.demoEnemyCounter++;
+    }
+
+    if (G.system.readyTimer.elapsed()) {
+      if (keyWasPressed("Space") || mouseWasPressed(0)) {
+        startGame();
+      }
+    }
+    return;
+  }
+
   // called every frame at 60 frames per second
   // handle input and update the game state
 
@@ -175,9 +230,7 @@ function gameUpdate() {
 
   // randomly generate enemies
   if (rand() > 1 - 0.006 * G.enemySpawnRate) {
-    const selectedEnemy = randPick(listOfEnemies);
-    console.log("Spawning enemy: " + selectedEnemy.enemyName);
-    new Enemy(G, selectedEnemy);
+    randomEnemy();
   }
 
   // randomly generate powerups
@@ -251,8 +304,16 @@ function gameRenderPost() {
   // called after objects are rendered
   // draw effects or hud that appear above all objects
 
+  // Game Start Screen
+  if (!G.system.gameStarted) {
+    drawText("Plane Game", vec2(0, 2), 3, G.system.cols.red, 0.5);
+    if (G.system.readyTimer.elapsed() && Math.sin(time * 5) > 0)
+      drawText("Click/Space to Start", vec2(0, -2), 1, G.system.cols.red, 0.5);
+  }
+
   // Currently Held Powerup UI Display
   let powerupFrameStartPos = cameraPos.copy().add(vec2(7, -13));
+
   // Button Display
   if (G.system.showControls) {
     drawTile(
@@ -365,7 +426,8 @@ function gameRenderPost() {
 
   if (
     G.system.player.crashed &&
-    time > G.system.player.crashed + G.system.respawnWaitTime
+    time > G.system.player.crashed + G.system.respawnWaitTime &&
+    Math.sin(time * 5) > 0
   ) {
     drawText(
       "Click/Space to Play Again",

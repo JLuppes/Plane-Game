@@ -84,6 +84,10 @@ export class Enemy extends EngineObject {
       this.velocity.y = this.game.speed;
     }
 
+    if (!this.game.system.gameStarted) {
+      this.velocity.y = -0.1;
+    }
+
     this.velocity.x = clamp(
       this.velocity.x,
       -1 * this.maxXSpeed,
@@ -115,7 +119,7 @@ export class Enemy extends EngineObject {
       this.pos.y -= 0.01;
     }
 
-    let shouldShoot = true;
+    let shouldShoot = this.shootPlayer;
 
     if (shouldShoot) {
       if (this.shootTimer.elapsed()) {
