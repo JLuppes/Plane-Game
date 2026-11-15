@@ -1,0 +1,9 @@
+services:
+  plane-game:
+    container_name: plane-game
+    image: plane-game
+    restart: no
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    volumes:
+      - "${CUSTOM_DATA:-/custom}:/app/custom"
