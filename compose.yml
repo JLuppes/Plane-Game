@@ -1,7 +1,7 @@
 services:
   plane-game:
     container_name: plane-game
-    image: plane-game
+    image: ghcr.io/jluppes/plane-game:release
     restart: no
     ports:
       - "${APP_PORT:-8080}:8080"
