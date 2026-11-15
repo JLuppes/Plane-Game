@@ -41,7 +41,7 @@ See the [Vite docs](https://vite.dev) for more.
 
 ## Sprites
 
-All sprites are from the incredible [Kenney.nl](https://kenney.nl/). Check them out!
+All sprites are from the incredible [Kenney.nl](https://kenney.nl/). Check them out!!
 
 ## Inspiration
 
