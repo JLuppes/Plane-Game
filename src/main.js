@@ -344,6 +344,15 @@ function gameRenderPost() {
       drawText("Click/Space to Start", vec2(0, -2), 1, G.system.cols.red, 0.5);
   }
 
+  // Health Display
+
+  drawText("Health:", vec2(0, -12), 1, G.system.cols.red, 0.5);
+  const currentHealth = G.playerHealth;
+  const maxHealth = G.startHealth;
+  const healthDisplayNums = `${currentHealth}/${maxHealth}`;
+
+  drawText(healthDisplayNums, vec2(3, -12), 1, G.system.cols.red, 0.5);
+
   // Currently Held Powerup UI Display
   let powerupFrameStartPos = cameraPos.copy().add(vec2(7, -13));
 
