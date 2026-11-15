@@ -2,6 +2,7 @@ import {
   engineInit,
   drawText,
   drawTile,
+  clamp,
   tile,
   time,
   vec2,
@@ -357,7 +358,7 @@ function gameRenderPost() {
   // Health Display
 
   drawText("Health:", vec2(0, -12), 1, G.system.cols.red, 0.5);
-  const currentHealth = G.playerHealth;
+  const currentHealth = clamp(G.playerHealth, 0, G.playerHealth);
   const maxHealth = G.startHealth;
   const healthDisplayNums = `${currentHealth}/${maxHealth}`;
 
@@ -419,6 +420,29 @@ function gameRenderPost() {
     num = num == "." ? num : parseInt(num, 10);
     drawTile(
       speedStartPos.add(vec2(index * 1, 0)),
+      vec2(1),
+      tile(
+        num == "." ? 9 : 19 + (num > 4 ? 7 + num : num),
+        G.system.tileSize,
+        G.system.tileSheets["general"],
+      ),
+    );
+  });
+
+  // Difficulty Display
+  let difficultyForDisplay = G.system.difficulty.toFixed(1);
+  let difficultyStartPos = cameraPos.copy().add(vec2(6, 10));
+  drawText(
+    "Current Difficulty",
+    difficultyStartPos.add(vec2(1.75, 1)),
+    0.5,
+    G.system.cols.red,
+    0.5,
+  );
+  difficultyForDisplay.split("").forEach((num, index) => {
+    num = num == "." ? num : parseInt(num, 10);
+    drawTile(
+      difficultyStartPos.add(vec2(index + 1, 0)),
       vec2(1),
       tile(
         num == "." ? 9 : 19 + (num > 4 ? 7 + num : num),
