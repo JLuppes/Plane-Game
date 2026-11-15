@@ -50,7 +50,7 @@ async function loadCustoms() {
   listOfPowerups = (
     await Promise.all([
       engineAddLoad(powerupsDefaultData),
-      engineAddLoad(fetchJSON(`./custom/customPowerups.json`)),
+      engineAddLoad(customPowerups),
     ])
   ).flat();
 
