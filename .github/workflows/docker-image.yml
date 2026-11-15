@@ -26,8 +26,7 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Add latest tag
-        uses: silverlyra/latest-image-action
+      - suses: silverlyra/latest-image-action
         with:
           repository: ${{ github.repository }}
           candidate-tag: ${{ github.ref_name }}
