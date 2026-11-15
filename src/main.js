@@ -292,6 +292,29 @@ function gameRenderPost() {
     );
   });
 
+  // Speed Display
+  let speedForDisplay = G.speed.toFixed(2);
+  let speedStartPos = cameraPos.copy().add(vec2(6, 13));
+  drawText(
+    "Current Speed",
+    speedStartPos.add(vec2(1.75, 1)),
+    0.5,
+    G.system.cols.red,
+    0.5,
+  );
+  speedForDisplay.split("").forEach((num, index) => {
+    num = num == "." ? num : parseInt(num, 10);
+    drawTile(
+      speedStartPos.add(vec2(index * 1, 0)),
+      vec2(1),
+      tile(
+        num == "." ? 9 : 19 + (num > 4 ? 7 + num : num),
+        G.system.tileSize,
+        G.system.tileSheets["general"],
+      ),
+    );
+  });
+
   // Lives Display
   let lives = Math.floor(G.playerLives);
   let livesStartPos = cameraPos.copy().add(vec2(-8, -13));
