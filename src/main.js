@@ -36,27 +36,36 @@ import powerupsDefaultData from "./data/powerups/default.json";
 import enemiesDefaultData from "./data/enemies/default.json";
 import particleEffectsData from "./data/particles/particleEffects.json";
 
-// Load custom powerup files
-const powerupLoaders = [engineAddLoad(powerupsDefaultData)];
-const customPowerups = fetchJSON(`./custom/customPowerups.json`)
-  .then(() => {
-    powerupLoaders.push(engineAddLoad(customPowerups));
-  })
-  .catch((e) => {
-    console.error("Error loading custom powerups!");
-  });
-const listOfPowerups = (await Promise.all(powerupLoaders)).flat();
+let listOfPowerups = [];
+let listOfEnemies = [];
 
-// Load custom enemies files
-const enemyLoaders = [engineAddLoad(enemiesDefaultData)];
-const customEnemies = fetchJSON(`./custom/customEnemies.json`)
-  .then(() => {
-    enemyLoaders.push(engineAddLoad(customEnemies));
-  })
-  .catch((e) => {
-    console.error("Error loading custom enemies!");
+async function loadCustoms() {
+  const customPowerups = fetchJSON(`./custom/customPowerups.json`).catch(
+    (e) => {
+      console.error("Error loading powerups!");
+      return [];
+    },
+  );
+  listOfPowerups = (
+    await Promise.all([
+      engineAddLoad(powerupsDefaultData),
+      engineAddLoad(fetchJSON(`./custom/customPowerups.json`)),
+    ])
+  ).flat();
+
+  const customEnemies = fetchJSON(`./custom/customEnemies.json`).catch((e) => {
+    console.error("Error loading enemies!");
+    return [];
   });
-const listOfEnemies = (await Promise.all(enemyLoaders)).flat();
+  listOfEnemies = (
+    await Promise.all([
+      engineAddLoad(enemiesDefaultData),
+      engineAddLoad(customEnemies),
+    ])
+  ).flat();
+}
+
+loadCustoms();
 
 export const G = {
   system: {
