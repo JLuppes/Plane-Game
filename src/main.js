@@ -125,7 +125,7 @@ export const G = {
   },
   score: 0,
   startScore: 0,
-  startHealth: 1,
+  startHealth: 10,
   startLives: 2,
   livesDisplayMax: 3,
   startSpeed: 0.1,
@@ -267,8 +267,8 @@ function gameUpdate() {
     rand() > 1 - 0.005 * G.powerupSpawnRate &&
     G.system.powerupTimer.elapsed()
   ) {
-    let powerupWeights = listOfPowerups.map((e) => {
-      return e.priority ? e.priority : 1;
+    let powerupWeights = listOfPowerups.map((p) => {
+      return p.priority ? p.priority : 1;
     });
 
     const powerUpChoice = randWeighted(listOfPowerups, powerupWeights);
