@@ -199,25 +199,26 @@ function randomEnemy() {
   return new Enemy(G, selectedEnemy);
 }
 
+function launchDemoEnemy() {
+  G.system.demoEnemyList.push(randomEnemy());
+
+  const newDemoEnemy = G.system.demoEnemyList[G.system.demoEnemyCounter];
+  let newX = G.system.width / 2;
+  newDemoEnemy.pos.x = rand(-newX, newX);
+  newDemoEnemy.pos.y = -16;
+  newDemoEnemy.demoSpeed = rand(-0.08, -0.14);
+  newDemoEnemy.shootPlayer = false;
+  newDemoEnemy.setCollision(false, false, false, false);
+  newDemoEnemy.angle = 0;
+  newDemoEnemy.chasePlayer = false;
+  G.system.demoEnemyTimer.set(2);
+  G.system.demoEnemyCounter++;
+}
+
 function gameUpdate() {
   if (!G.system.gameStarted) {
     if (G.system.demoEnemyTimer.elapsed()) {
-      console.log("Launching demo enemy...");
-      G.system.demoEnemyList.push(randomEnemy());
-
-      const newDemoEnemy = G.system.demoEnemyList[G.system.demoEnemyCounter];
-      console.log("Updating demo enemy:");
-      console.log(newDemoEnemy);
-      let newX = G.system.width / 2;
-      newDemoEnemy.pos.x = rand(-newX, newX);
-      newDemoEnemy.pos.y = -20;
-      newDemoEnemy.velocity.y = -1;
-      newDemoEnemy.shootPlayer = false;
-      newDemoEnemy.setCollision(false, false, false, false);
-      newDemoEnemy.angle = 0;
-      newDemoEnemy.chasePlayer = false;
-      G.system.demoEnemyTimer.set(2);
-      G.system.demoEnemyCounter++;
+      launchDemoEnemy();
     }
 
     if (G.system.readyTimer.elapsed()) {

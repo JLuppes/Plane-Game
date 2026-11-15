@@ -67,6 +67,7 @@ export class Enemy extends EngineObject {
     this.crashDamage = crashDamage;
     this.bulletSpeed = bulletSpeed;
     this.met = new Set();
+    this.demoSpeed = -0.1;
   }
 
   update() {
@@ -85,7 +86,7 @@ export class Enemy extends EngineObject {
     }
 
     if (!this.game.system.gameStarted) {
-      this.velocity.y = -0.1;
+      this.velocity.y = this.demoSpeed;
     }
 
     this.velocity.x = clamp(
