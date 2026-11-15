@@ -214,7 +214,14 @@ function gameUpdate() {
     }
 
     if (G.system.readyTimer.elapsed()) {
-      if (keyWasPressed("Space") || mouseWasPressed(0)) {
+      if (keyWasPressed("Space")) {
+        G.system.mouseEnabled = false;
+        G.system.alternateMouseControl = false;
+        startGame();
+      }
+      if (mouseWasPressed(0)) {
+        G.system.mouseEnabled = true;
+        G.system.alternateMouseControl = true;
         startGame();
       }
     }
