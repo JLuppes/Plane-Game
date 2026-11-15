@@ -24,6 +24,7 @@ import {
   Timer,
   mousePosScreen,
   randPick,
+  randWeighted,
 } from "littlejsengine";
 import { Player } from "./Player";
 import { PowerUp } from "./PowerUp";
@@ -204,7 +205,10 @@ function startGame() {
 }
 
 function randomEnemy() {
-  const selectedEnemy = randPick(listOfEnemies);
+  let enemyWeights = listOfEnemies.map((e) => {
+    return e.priority ? e.priority : 1;
+  });
+  const selectedEnemy = randWeighted(listOfEnemies, enemyWeights);
   console.log("Spawning enemy: " + selectedEnemy.enemyName);
   return new Enemy(G, selectedEnemy);
 }
@@ -263,7 +267,11 @@ function gameUpdate() {
     rand() > 1 - 0.005 * G.powerupSpawnRate &&
     G.system.powerupTimer.elapsed()
   ) {
-    const powerUpChoice = randPick(listOfPowerups);
+    let powerupWeights = listOfPowerups.map((e) => {
+      return e.priority ? e.priority : 1;
+    });
+
+    const powerUpChoice = randWeighted(listOfPowerups, powerupWeights);
     new PowerUp(G, powerUpChoice);
     G.system.powerupTimer.set(G.powerupCooldown);
   }

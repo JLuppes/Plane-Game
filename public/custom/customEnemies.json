@@ -1,6 +1,7 @@
 [
   {
     "enemyName": "Big Grunt",
+    "priority":99,
     "powerLevel": 2,
     "enemySize": 10,
     "frame": 1,
