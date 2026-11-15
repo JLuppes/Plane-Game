@@ -36,19 +36,20 @@ import powerupsDefaultData from "./data/powerups/default.json";
 import enemiesDefaultData from "./data/enemies/default.json";
 import particleEffectsData from "./data/particles/particleEffects.json";
 
+// Load custom powerup files
 const powerupLoaders = [engineAddLoad(powerupsDefaultData)];
-const customPowerups = fetchJSON(`./customPowerups.json`)
+const customPowerups = fetchJSON(`./custom/customPowerups.json`)
   .then(() => {
     powerupLoaders.push(engineAddLoad(customPowerups));
   })
   .catch((e) => {
     console.error("Error loading custom powerups!");
   });
-
 const listOfPowerups = (await Promise.all(powerupLoaders)).flat();
 
+// Load custom enemies files
 const enemyLoaders = [engineAddLoad(enemiesDefaultData)];
-const customEnemies = fetchJSON(`./customEnemies.json`)
+const customEnemies = fetchJSON(`./custom/customEnemies.json`)
   .then(() => {
     enemyLoaders.push(engineAddLoad(customEnemies));
   })
