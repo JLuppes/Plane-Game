@@ -35,21 +35,13 @@ npm run preview   # preview the production build
 
 See the [Vite docs](https://vite.dev) for more.
 
-## Deploying
-
-The included `vite.config.js` sets `base: './'`, which makes the built site work from any subdirectory — including GitHub Pages project sites and itch.io uploads. The `public/.nojekyll` file ships in the build so GitHub Pages won't ignore Vite's underscore-prefixed chunk files.
-
-To deploy:
-
-```bash
-npm run build
-```
-
-then upload the contents of `dist/` (or zip them for itch.io).
-
 ## LittleJS
 
 [Read the LittleJS docs to learn more](https://github.com/KilledByAPixel/LittleJS).
+
+## Sprites
+
+All sprites are from the incredible [Kenney.nl](https://kenney.nl/). Check them out!
 
 ## Inspiration
 
