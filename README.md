@@ -25,6 +25,32 @@ npm run dev
 
 Requires Node 22.12+, what the LittleJS package and its tools are tested on.
 
+## Docker
+
+You can run this game via a docker container.
+
+Set up your .env file first from the provided .env.sample file to use your own custom powerup files.
+
+### Build Your Own Image
+
+```bash
+docker build -t plane-game .
+```
+
+and then
+
+```bash
+docker run -p 8080:8080 plane-game --env-file=.env
+```
+
+### Compose File
+
+You can also run via the included Docker Compose file:
+
+```bash
+docker compose -f .\compose.yml --env-file=.env up -d
+```
+
 ## Vite commands
 
 ```bash
