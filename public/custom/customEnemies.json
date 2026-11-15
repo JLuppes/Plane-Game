@@ -2,7 +2,7 @@
   {
     "enemyName": "Big Grunt",
     "priority":99,
-    "powerLevel": 2,
+    "powerLevel": 3,
     "enemySize": 10,
     "frame": 1,
     "tileSheet": "ships",

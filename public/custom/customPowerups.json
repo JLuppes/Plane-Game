@@ -1,7 +1,7 @@
 [
   {
     "name": "Powershot",
-    "priority": 2,
+    "priority": 99,
     "frame": 25,
     "duration": 3,
     "spriteSheet": "general",

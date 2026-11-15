@@ -77,6 +77,7 @@ export const G = {
     tileSize: 16,
     tileSheets: { ships: 0, general: 1, input: 2 },
     tiles: [shipsURL, tilesURL, inputURL],
+    difficulty: 1,
     currentHeldPowerUp: {},
     currentActiveEffects: [],
     infoPopups: [],
@@ -123,6 +124,8 @@ export const G = {
       ]),
     },
   },
+  difficulty: 1,
+  speedToDifficultyScale: 1,
   score: 0,
   startScore: 0,
   startHealth: 10,
@@ -204,10 +207,17 @@ function startGame() {
   gameInit();
 }
 
-function randomEnemy() {
-  let enemyWeights = listOfEnemies.map((e) => {
-    return e.priority ? e.priority : 1;
+function getWeights(listToGetWeights = []) {
+  return listToGetWeights.map((e) => {
+    let powerLevel = e.powerLevel ? e.powerLevel : e.priority ? e.priority : 1;
+    let numerator = Math.pow(powerLevel, G.system.difficulty);
+    let denominator = Math.pow(powerLevel, 4);
+    return numerator / denominator;
   });
+}
+
+function randomEnemy() {
+  let enemyWeights = getWeights(listOfEnemies);
   const selectedEnemy = randWeighted(listOfEnemies, enemyWeights);
   console.log("Spawning enemy: " + selectedEnemy.enemyName);
   return new Enemy(G, selectedEnemy);
@@ -255,6 +265,8 @@ function gameUpdate() {
 
   G.score += G.speed * (G.speedScoreFactor / 5);
 
+  G.system.difficulty = G.speed * G.speedToDifficultyScale * G.difficulty * 10;
+
   G.speed += G.speed * (G.speedIncreaseFactor * 0.0005);
 
   // randomly generate enemies
@@ -267,9 +279,7 @@ function gameUpdate() {
     rand() > 1 - 0.005 * G.powerupSpawnRate &&
     G.system.powerupTimer.elapsed()
   ) {
-    let powerupWeights = listOfPowerups.map((p) => {
-      return p.priority ? p.priority : 1;
-    });
+    let powerupWeights = getWeights(listOfPowerups);
 
     const powerUpChoice = randWeighted(listOfPowerups, powerupWeights);
     new PowerUp(G, powerUpChoice);

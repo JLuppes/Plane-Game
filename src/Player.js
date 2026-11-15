@@ -243,6 +243,7 @@ export class Player extends EngineObject {
       this.die();
     } else {
       G.system.invincibleTimer.set(G.invincibleTime);
+      G.playerHealth = G.startHealth;
     }
   }
 
