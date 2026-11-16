@@ -220,10 +220,12 @@ export class Player extends EngineObject {
     LOG(o);
 
     if (this.crashed) return;
-    if (o.gameType == "enemy") {
-      this.takeHit(o.crashDamage);
-    } else if (o.gameType == "bullet" && o.gameSource == "enemy") {
-      this.takeHit(o.damage);
+    if (G.system.invincibleTimer.elapsed()) {
+      if (o.gameType == "enemy") {
+        this.takeHit(o.crashDamage);
+      } else if (o.gameType == "bullet" && o.gameSource == "enemy") {
+        this.takeHit(o.damage);
+      }
     }
   }
   takeHit(damageAmount = 1) {
@@ -233,6 +235,7 @@ export class Player extends EngineObject {
         this.loseLife();
       }
       particleEffect("sparks", this.pos).emitTime = 0.1;
+      G.system.invincibleTimer.set(G.invincibleTimeHit);
     }
   }
 
@@ -242,7 +245,7 @@ export class Player extends EngineObject {
     if (G.playerLives < 0) {
       this.die();
     } else {
-      G.system.invincibleTimer.set(G.invincibleTime);
+      G.system.invincibleTimer.set(G.invincibleTimeDie);
       G.playerHealth = G.startHealth;
     }
   }

@@ -148,7 +148,8 @@ export const G = {
   powerupCooldown: 2.0,
   playerLives: 1,
   playerDamage: 1,
-  invincibleTime: 3,
+  invincibleTimeDie: 3,
+  invincibleTimeHit: 1,
   friendlyFire: false,
 };
 
