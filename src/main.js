@@ -85,6 +85,7 @@ export const G = {
       "./custom/customSprites.png",
     ],
     difficulty: 1,
+    healthDisplayText: false,
     currentHeldPowerUp: {},
     currentActiveEffects: [],
     infoPopups: [],
@@ -135,7 +136,7 @@ export const G = {
   speedToDifficultyScale: 1,
   score: 0,
   startScore: 0,
-  startHealth: 10,
+  startHealth: 20,
   startLives: 2,
   livesDisplayMax: 3,
   startSpeed: 0.1,
@@ -362,13 +363,59 @@ function gameRenderPost() {
   }
 
   // Health Display
-
-  drawText("Health:", vec2(0, -12), 1, G.system.cols.red, 0.5);
+  const healthDisplayStartPos = vec2(-3.5, -12);
   const currentHealth = clamp(G.playerHealth, 0, G.playerHealth);
+  const currentHealthRounded = Math.ceil(currentHealth);
   const maxHealth = G.startHealth;
-  const healthDisplayNums = `${currentHealth}/${maxHealth}`;
-
-  drawText(healthDisplayNums, vec2(3, -12), 1, G.system.cols.red, 0.5);
+  if (G.system.healthDisplayText) {
+    drawText("Health:", healthDisplayStartPos, 1, G.system.cols.red, 0.5);
+    const healthDisplayNums = `${currentHealth}/${maxHealth}`;
+    drawText(healthDisplayNums, vec2(3, -12), 1, G.system.cols.red, 0.5);
+  } else {
+    if (currentHealthRounded <= 20) {
+      for (let i = 0; i < currentHealthRounded; i++) {
+        if (i < 10) {
+          drawTile(
+            healthDisplayStartPos.add(vec2(i * 0.75, -1)),
+            vec2(1),
+            tile(26, G.system.tileSize, G.system.tileSheets["general"]),
+          );
+        } else if (i < 20) {
+          drawTile(
+            healthDisplayStartPos.add(vec2((i - 10) * 0.75, -2)),
+            vec2(1),
+            tile(26, G.system.tileSize, G.system.tileSheets["general"]),
+          );
+        }
+      }
+    } else if (currentHealthRounded > 20) {
+      drawTile(
+        healthDisplayStartPos.add(vec2(2, -2)),
+        vec2(1),
+        tile(26, G.system.tileSize, G.system.tileSheets["general"]),
+      );
+      drawTile(
+        healthDisplayStartPos.add(vec2(3, -2)),
+        vec2(1),
+        tile(10, G.system.tileSize, G.system.tileSheets["general"]),
+      );
+      currentHealth
+        .toString()
+        .split("")
+        .forEach((num, index) => {
+          num = num == "." ? num : parseInt(num, 10);
+          drawTile(
+            healthDisplayStartPos.add(vec2(index + 4, -2)),
+            vec2(1),
+            tile(
+              num == "." ? 9 : 19 + (num > 4 ? 7 + num : num),
+              G.system.tileSize,
+              G.system.tileSheets["general"],
+            ),
+          );
+        });
+    }
+  }
 
   // Currently Held Powerup UI Display
   let powerupFrameStartPos = cameraPos.copy().add(vec2(7, -13));
@@ -460,7 +507,7 @@ function gameRenderPost() {
 
   // Lives Display
   let lives = Math.floor(G.playerLives);
-  let livesStartPos = cameraPos.copy().add(vec2(-8, -13));
+  let livesStartPos = cameraPos.copy().add(vec2(-8.5, -13));
   let livesDisplayMax = G.livesDisplayMax;
   if (lives <= livesDisplayMax) {
     for (let i = 0; i < lives; i++) {
