@@ -34,6 +34,7 @@ import { Enemy } from "./Enemy";
 import tilesURL from "./data/tiles/tiles.png";
 import shipsURL from "./data/tiles/ships.png";
 import inputURL from "./data/tiles/input.png";
+import emojisURL from "./data/tiles/emojis.png";
 import powerupsDefaultData from "./data/defaultPowerups.json";
 import enemiesDefaultData from "./data/defaultEnemies.json";
 
@@ -75,8 +76,14 @@ export const G = {
     width: 20,
     height: 30,
     tileSize: 16,
-    tileSheets: { ships: 0, general: 1, input: 2 },
-    tiles: [shipsURL, tilesURL, inputURL],
+    tileSheets: { ships: 0, general: 1, input: 2, emoji: 3, custom: 4 },
+    tiles: [
+      shipsURL,
+      tilesURL,
+      inputURL,
+      emojisURL,
+      "./custom/customSprites.png",
+    ],
     difficulty: 1,
     currentHeldPowerUp: {},
     currentActiveEffects: [],
