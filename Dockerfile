@@ -1,11 +1,11 @@
-FROM node:24-alpine AS builder
+FROM node:26-alpine AS builder
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install
 COPY . .
 RUN npm run build
 
-FROM busybox:1.30 AS runner
+FROM busybox:1.38 AS runner
 WORKDIR /app
 COPY --from=builder /app/dist .
 COPY httpd.conf /etc/httpd.conf
