@@ -34,9 +34,8 @@ import { Enemy } from "./Enemy";
 import tilesURL from "./data/tiles/tiles.png";
 import shipsURL from "./data/tiles/ships.png";
 import inputURL from "./data/tiles/input.png";
-import powerupsDefaultData from "./data/powerups/default.json";
-import enemiesDefaultData from "./data/enemies/default.json";
-import particleEffectsData from "./data/particles/particleEffects.json";
+import powerupsDefaultData from "./data/defaultPowerups.json";
+import enemiesDefaultData from "./data/defaultEnemies.json";
 
 let listOfPowerups = [];
 let listOfEnemies = [];
