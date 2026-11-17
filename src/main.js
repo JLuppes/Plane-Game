@@ -89,6 +89,8 @@ export const G = {
     currentHeldPowerUp: {},
     currentActiveEffects: [],
     infoPopups: [],
+    currentEnemies: [],
+    currentPowerups: [],
     mouseEnabled: true,
     alternateMouseControl: true,
     showControls: true,
@@ -229,13 +231,13 @@ function randomEnemy() {
   let enemyWeights = getWeights(listOfEnemies);
   const selectedEnemy = randWeighted(listOfEnemies, enemyWeights);
   console.log("Spawning enemy: " + selectedEnemy.enemyName);
-  return new Enemy(G, selectedEnemy);
+  const newEnemy = new Enemy(G, selectedEnemy);
+  G.system.currentEnemies.push(newEnemy);
+  return newEnemy;
 }
 
 function launchDemoEnemy() {
-  G.system.demoEnemyList.push(randomEnemy());
-
-  const newDemoEnemy = G.system.demoEnemyList[G.system.demoEnemyCounter];
+  const newDemoEnemy = randomEnemy();
   let newX = G.system.width / 2;
   newDemoEnemy.pos.x = rand(-newX, newX);
   newDemoEnemy.pos.y = -16;
@@ -244,13 +246,24 @@ function launchDemoEnemy() {
   newDemoEnemy.setCollision(false, false, false, false);
   newDemoEnemy.angle = 0;
   newDemoEnemy.chasePlayer = false;
+  G.system.demoEnemyList.push(newDemoEnemy);
   G.system.demoEnemyTimer.set(2);
-  G.system.demoEnemyCounter++;
+}
+
+function cleanUp(listOfEngineObjects, oldTime = 10) {
+  listOfEngineObjects = listOfEngineObjects.filter((e) => {
+    if (time - e.spawnTime > oldTime) {
+      e.destroy();
+      return false;
+    } else return true;
+  });
+  return listOfEngineObjects;
 }
 
 function gameUpdate() {
   if (!G.system.gameStarted) {
     if (G.system.demoEnemyTimer.elapsed()) {
+      G.system.demoEnemyList = cleanUp(G.system.demoEnemyList);
       launchDemoEnemy();
     }
 
@@ -280,6 +293,7 @@ function gameUpdate() {
 
   // randomly generate enemies
   if (rand() > 1 - 0.006 * G.enemySpawnRate) {
+    G.system.currentEnemies = cleanUp(G.system.currentEnemies);
     randomEnemy();
   }
 
@@ -291,8 +305,9 @@ function gameUpdate() {
     let powerupWeights = getWeights(listOfPowerups);
 
     const powerUpChoice = randWeighted(listOfPowerups, powerupWeights);
-    new PowerUp(G, powerUpChoice);
+    G.system.currentPowerups.push(new PowerUp(G, powerUpChoice));
     G.system.powerupTimer.set(G.powerupCooldown);
+    G.system.currentPowerups = cleanUp(G.system.currentPowerups);
   }
 
   if (
