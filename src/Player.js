@@ -3,6 +3,7 @@ import {
   cameraPos,
   vec2,
   time,
+  clamp,
   mousePos,
   setCursor,
   keyWasPressed,

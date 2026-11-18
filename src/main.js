@@ -39,37 +39,6 @@ import emojisURL from "./data/tiles/emojis.png";
 import powerupsDefaultData from "./data/defaultPowerups.json";
 import enemiesDefaultData from "./data/defaultEnemies.json";
 
-let listOfPowerups = [];
-let listOfEnemies = [];
-
-async function loadCustoms() {
-  const customPowerups = fetchJSON(`./custom/customPowerups.json`).catch(
-    (e) => {
-      console.error("Error loading powerups!");
-      return [];
-    },
-  );
-  listOfPowerups = (
-    await Promise.all([
-      engineAddLoad(powerupsDefaultData),
-      engineAddLoad(customPowerups),
-    ])
-  ).flat();
-
-  const customEnemies = fetchJSON(`./custom/customEnemies.json`).catch((e) => {
-    console.error("Error loading enemies!");
-    return [];
-  });
-  listOfEnemies = (
-    await Promise.all([
-      engineAddLoad(enemiesDefaultData),
-      engineAddLoad(customEnemies),
-    ])
-  ).flat();
-}
-
-loadCustoms();
-
 export const G = {
   system: {
     active: false,
@@ -155,6 +124,11 @@ export const G = {
   invincibleTimeHit: 1,
   friendlyFire: false,
 };
+
+let listOfPowerups = [];
+let listOfEnemies = [];
+
+loadCustoms();
 
 // called once after the engine starts up
 function gameInit() {
@@ -609,6 +583,32 @@ function gameRenderPost() {
   for (const thisPopup in G.system.infoPopups) {
     G.system.infoPopups[thisPopup].display();
   }
+}
+
+async function loadCustoms() {
+  const customPowerups = fetchJSON(`./custom/customPowerups.json`).catch(
+    (e) => {
+      console.error("Error loading powerups!");
+      return [];
+    },
+  );
+  listOfPowerups = (
+    await Promise.all([
+      engineAddLoad(powerupsDefaultData),
+      engineAddLoad(customPowerups),
+    ])
+  ).flat();
+
+  const customEnemies = fetchJSON(`./custom/customEnemies.json`).catch((e) => {
+    console.error("Error loading enemies!");
+    return [];
+  });
+  listOfEnemies = (
+    await Promise.all([
+      engineAddLoad(enemiesDefaultData),
+      engineAddLoad(customEnemies),
+    ])
+  ).flat();
 }
 
 // fires up LittleJS with all necessary functions and tiles
