@@ -32,10 +32,10 @@ import { Player } from "./Player";
 import { PowerUp } from "./PowerUp";
 import { Bullet } from "./Bullet";
 import { Enemy } from "./Enemy";
-import tilesURL from "./data/tiles/tiles.png";
-import shipsURL from "./data/tiles/ships.png";
-import inputURL from "./data/tiles/input.png";
-import emojisURL from "./data/tiles/emojis.png";
+import generalSpritesURL from "./data/sprites/general.png";
+import shipsSpritesURL from "./data/sprites/ships.png";
+import inputSpritesURL from "./data/sprites/input.png";
+import emojisSpritesURL from "./data/sprites/emojis.png";
 import powerupsDefaultData from "./data/defaultPowerups.json";
 import enemiesDefaultData from "./data/defaultEnemies.json";
 import defaultGameInfo from "./data/defaultGameInfo.json";
@@ -49,10 +49,10 @@ export const G = {
     tileSize: 16,
     tileSheets: { ships: 0, general: 1, input: 2, emoji: 3, custom: 4 },
     tiles: [
-      shipsURL,
-      tilesURL,
-      inputURL,
-      emojisURL,
+      shipsSpritesURL,
+      generalSpritesURL,
+      inputSpritesURL,
+      emojisSpritesURL,
       "./custom/customSprites.png",
     ],
     difficulty: 1,
