@@ -195,7 +195,11 @@ function startGame() {
 
 function getWeights(listToGetWeights = []) {
   return listToGetWeights.map((e) => {
-    let powerLevel = e.powerLevel ? e.powerLevel : e.priority ? e.priority : 1;
+    let powerLevel = e.powerLevel
+      ? e.powerLevel
+      : e.priority
+        ? 1 / (e.priority || 1)
+        : 1;
     let numerator = Math.pow(powerLevel, G.system.difficulty);
     let denominator = Math.max(Math.pow(powerLevel, 4), 0.1);
     return numerator / denominator;
