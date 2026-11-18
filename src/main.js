@@ -38,6 +38,7 @@ import inputURL from "./data/tiles/input.png";
 import emojisURL from "./data/tiles/emojis.png";
 import powerupsDefaultData from "./data/defaultPowerups.json";
 import enemiesDefaultData from "./data/defaultEnemies.json";
+import defaultGameInfo from "./data/defaultGameInfo.json";
 
 export const G = {
   system: {
@@ -127,8 +128,9 @@ export const G = {
 
 let listOfPowerups = [];
 let listOfEnemies = [];
+let gameInfo = {};
 
-loadCustoms();
+await loadCustoms();
 
 // called once after the engine starts up
 function gameInit() {
@@ -352,9 +354,19 @@ function gameRenderPost() {
 
   // Game Start Screen
   if (!G.system.gameStarted) {
-    drawText("Plane Game", vec2(0, 2), 3, G.system.cols.red, 0.5);
+    const gameTitle = gameInfo.gameName || "Plane Game";
+    const titleSize = 3 / (gameTitle.length / 10);
+    drawText(gameTitle, vec2(0, 4), titleSize, G.system.cols.red, 0.5);
+
+    if (gameInfo.authorName) {
+      const gameAuthor =
+        "Customized By: \n\n" + (gameInfo.authorName || "Friendo Dunwoody");
+      const authorSize = 3 / (gameAuthor.length / 10);
+      drawText(gameAuthor, vec2(0, -1), authorSize, G.system.cols.red, 0.5);
+    }
+
     if (G.system.readyTimer.elapsed() && Math.sin(time * 5) > 0)
-      drawText("Click/Space to Start", vec2(0, -2), 1, G.system.cols.red, 0.5);
+      drawText("Click/Space to Start", vec2(0, -4), 1, G.system.cols.red, 0.5);
   }
 
   // Health Display
@@ -588,8 +600,15 @@ function gameRenderPost() {
     G.system.infoPopups[thisPopup].display();
   }
 }
-
 async function loadCustoms() {
+  const customGameInfo = await fetchJSON(`./custom/customGameInfo.json`).catch(
+    (e) => {
+      console.error("Error loading custom game info!");
+      return defaultGameInfo;
+    },
+  );
+  gameInfo = customGameInfo[0];
+
   const customPowerups = fetchJSON(`./custom/customPowerups.json`).catch(
     (e) => {
       console.error("Error loading powerups!");
