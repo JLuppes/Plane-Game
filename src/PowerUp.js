@@ -1,4 +1,4 @@
-import { EngineObject, vec2, tile, particleEffect } from "littlejsengine";
+import { EngineObject, vec2, tile, particleEffect, rand } from "littlejsengine";
 import { G } from "./main";
 import { InfoPopup } from "./InfoPopup";
 

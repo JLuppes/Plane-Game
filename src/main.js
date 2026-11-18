@@ -24,6 +24,7 @@ import {
   engineAddLoad,
   Timer,
   mousePosScreen,
+  rand,
   randPick,
   randWeighted,
 } from "littlejsengine";

@@ -4,7 +4,9 @@ import {
   tile,
   particleEffect,
   clamp,
+  rand,
   Timer,
+  LOG,
 } from "littlejsengine";
 import { G } from "./main";
 import { Bullet } from "./Bullet";

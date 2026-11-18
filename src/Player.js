@@ -13,6 +13,7 @@ import {
   mouseIsDown,
   drawTile,
   tile,
+  LOG,
 } from "littlejsengine";
 import { G } from "./main";
 import { Bullet } from "./Bullet";
@@ -216,9 +217,6 @@ export class Player extends EngineObject {
   }
 
   collideWithObject(o) {
-    LOG("Player collided with: ");
-    LOG(o);
-
     if (this.crashed) return;
     if (G.system.invincibleTimer.elapsed()) {
       if (o.gameType == "enemy") {
