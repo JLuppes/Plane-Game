@@ -264,7 +264,7 @@ function gameUpdate() {
 
   G.system.difficulty = G.speed * G.speedToDifficultyScale * G.difficulty * 10;
 
-  G.speed += G.speed * (G.speedIncreaseFactor * 0.0002);
+  G.speed += G.speed * (1 - G.speed / 1.5) * (G.speedIncreaseFactor * 0.0002);
 
   // randomly generate enemies
   if (rand() > 1 - 0.006 * G.enemySpawnRate) {
