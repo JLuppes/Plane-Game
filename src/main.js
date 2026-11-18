@@ -73,6 +73,7 @@ export const G = {
     invincibleTimer: new Timer(),
     powerupTimer: new Timer(),
     firstStart: true,
+    speedDisplay: false,
     cols: {
       white: new Color().setHex("#ffffff"),
       red: new Color().setHex("#ff0000"),
@@ -242,6 +243,11 @@ function cleanUp(listOfEngineObjects, oldTime = 10) {
 }
 
 function gameUpdate() {
+  // Handle debug inputs
+  if (keyWasPressed("KeyI")) {
+    G.system.speedDisplay = !G.system.speedDisplay;
+  }
+
   if (!G.system.gameStarted) {
     if (G.system.demoEnemyTimer.elapsed()) {
       G.system.demoEnemyList = cleanUp(G.system.demoEnemyList);
@@ -362,7 +368,7 @@ function gameRenderPost() {
       const gameAuthor =
         "Customized By: \n\n" + (gameInfo.authorName || "Friendo Dunwoody");
       const authorSize = 3 / (gameAuthor.length / 10);
-      drawText(gameAuthor, vec2(0, -1), authorSize, G.system.cols.red, 0.5);
+      drawText(gameAuthor, vec2(0, -1), authorSize, G.system.cols.red, 0.2);
     }
 
     if (G.system.readyTimer.elapsed() && Math.sin(time * 5) > 0)
@@ -466,51 +472,53 @@ function gameRenderPost() {
     );
   });
 
-  // Speed Display
-  let speedForDisplay = G.speed.toFixed(2);
-  let speedStartPos = cameraPos.copy().add(vec2(6, 13));
-  drawText(
-    "Current Speed",
-    speedStartPos.add(vec2(1.75, 1)),
-    0.5,
-    G.system.cols.red,
-    0.5,
-  );
-  speedForDisplay.split("").forEach((num, index) => {
-    num = num == "." ? num : parseInt(num, 10);
-    drawTile(
-      speedStartPos.add(vec2(index * 1, 0)),
-      vec2(1),
-      tile(
-        num == "." ? 9 : 19 + (num > 4 ? 7 + num : num),
-        G.system.tileSize,
-        G.system.tileSheets["general"],
-      ),
+  if (G.system.speedDisplay) {
+    // Speed Display
+    let speedForDisplay = G.speed.toFixed(2);
+    let speedStartPos = cameraPos.copy().add(vec2(6, 13));
+    drawText(
+      "Current Speed",
+      speedStartPos.add(vec2(1.75, 1)),
+      0.6,
+      G.system.cols.red,
+      0.5,
     );
-  });
+    speedForDisplay.split("").forEach((num, index) => {
+      num = num == "." ? num : parseInt(num, 10);
+      drawTile(
+        speedStartPos.add(vec2(index * 1, 0)),
+        vec2(1),
+        tile(
+          num == "." ? 9 : 19 + (num > 4 ? 7 + num : num),
+          G.system.tileSize,
+          G.system.tileSheets["general"],
+        ),
+      );
+    });
 
-  // Difficulty Display
-  let difficultyForDisplay = G.system.difficulty.toFixed(1);
-  let difficultyStartPos = cameraPos.copy().add(vec2(6, 10));
-  drawText(
-    "Current Difficulty",
-    difficultyStartPos.add(vec2(1.75, 1)),
-    0.5,
-    G.system.cols.red,
-    0.5,
-  );
-  difficultyForDisplay.split("").forEach((num, index) => {
-    num = num == "." ? num : parseInt(num, 10);
-    drawTile(
-      difficultyStartPos.add(vec2(index + 1, 0)),
-      vec2(1),
-      tile(
-        num == "." ? 9 : 19 + (num > 4 ? 7 + num : num),
-        G.system.tileSize,
-        G.system.tileSheets["general"],
-      ),
+    // Difficulty Display
+    let difficultyForDisplay = G.system.difficulty.toFixed(1);
+    let difficultyStartPos = cameraPos.copy().add(vec2(6, 10));
+    drawText(
+      "Current Difficulty",
+      difficultyStartPos.add(vec2(1.75, 1)),
+      0.6,
+      G.system.cols.red,
+      0.5,
     );
-  });
+    difficultyForDisplay.split("").forEach((num, index) => {
+      num = num == "." ? num : parseInt(num, 10);
+      drawTile(
+        difficultyStartPos.add(vec2(index + 1, 0)),
+        vec2(1),
+        tile(
+          num == "." ? 9 : 19 + (num > 4 ? 7 + num : num),
+          G.system.tileSize,
+          G.system.tileSheets["general"],
+        ),
+      );
+    });
+  }
 
   // Lives Display
   let lives = Math.floor(G.playerLives);
