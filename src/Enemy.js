@@ -31,6 +31,7 @@ export class Enemy extends EngineObject {
     let shootDamage = enemyData.shootDamage || 0.5;
     let crashDamage = enemyData.crashDamage || 1;
     let bulletSpeed = enemyData.bulletSpeed || 0.3;
+    let fleeTime = enemyData.fleeTime || 10;
 
     let frame = enemyData.frame || 8;
     let tileSheet = enemyData.tileSheet || "ships";
@@ -70,6 +71,7 @@ export class Enemy extends EngineObject {
     this.bulletSpeed = bulletSpeed;
     this.met = new Set();
     this.demoSpeed = -0.1;
+    this.fleeTime = fleeTime;
   }
 
   update() {
@@ -80,6 +82,14 @@ export class Enemy extends EngineObject {
       return;
     }
     if (this.chasePlayer && this.chaseStyle == "chase") {
+      let chaseDist = 12;
+      let distFromPlayer = this.pos.distance(this.game.system.player.pos);
+      let xDif = this.pos.x - G.system.player.pos.x;
+      this.velocity.x += xDif * this.handleSpeed * -0.001;
+      this.velocity.y = (distFromPlayer - chaseDist) / 100;
+    } else if (this.chasePlayer && this.chaseStyle == "flee") {
+      this.velocity.y = this.game.speed * 2;
+    } else if (this.chasePlayer && this.chaseStyle == "dive") {
       let xDif = this.pos.x - G.system.player.pos.x;
       this.velocity.x += xDif * this.handleSpeed * -0.001;
       this.velocity.y = this.game.speed;

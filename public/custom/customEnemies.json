@@ -1,7 +1,6 @@
 [
   {
     "enemyName": "Big Grunt",
-    "priority":99,
     "powerLevel": 3,
     "enemySize": 10,
     "frame": 1,
@@ -17,6 +16,7 @@
     "shootPattern": [0.2, 0.2, 2],
     "shootDamage": 0.5,
     "crashDamage": 1,
-    "bulletSpeed": 0.3
+    "bulletSpeed": 0.3,
+    "fleeTime": 20
   }
 ]

@@ -227,8 +227,17 @@ function launchDemoEnemy() {
   G.system.demoEnemyTimer.set(2);
 }
 
-function cleanUp(listOfEngineObjects, oldTime = 10) {
+function cleanUp(listOfEngineObjects, oldTime = 20, fleeTime = 10) {
   listOfEngineObjects = listOfEngineObjects.filter((e) => {
+    if (e.fleeTime) {
+      fleeTime = e.fleeTime;
+      oldTime = fleeTime + 10;
+    }
+    if (time - e.spawnTime > fleeTime) {
+      if (e.gameType == "enemy") {
+        e.chaseStyle = "flee";
+      }
+    }
     if (time - e.spawnTime > oldTime) {
       e.destroy();
       return false;

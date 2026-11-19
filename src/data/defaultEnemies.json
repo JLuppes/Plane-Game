@@ -7,7 +7,7 @@
     "startHealth": 2,
     "scoreValue": 100,
     "chasePlayer": true,
-    "chaseStyle": "chase",
+    "chaseStyle": "dive",
     "shootPlayer": true,
     "shootStyle": "straight",
     "handleSpeed": 1,
@@ -15,6 +15,7 @@
     "shootPattern": [0.2, 0.2, 2],
     "shootDamage": 0.5,
     "crashDamage": 1,
-    "bulletSpeed": 0.3
+    "bulletSpeed": 0.3,
+    "fleeTime": 10
   }
 ]
