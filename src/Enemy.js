@@ -6,6 +6,7 @@ import {
   clamp,
   rand,
   Timer,
+  hsl,
   LOG,
 } from "littlejsengine";
 import { G } from "./main";
@@ -54,10 +55,13 @@ export class Enemy extends EngineObject {
     this.maxY = (game.system.height + -100) / 2;
 
     this.name = name;
+    this.frame = frame;
+    this.tileSheet = tileSheet;
     this.setCollision(true, false, false, false);
     this.drawSize = vec2(size);
     this.velocity = vel;
     this.gameType = "enemy";
+    this.startHealth = startHealth;
     this.health = startHealth;
     this.dead = false;
     this.scoreValue = scoreValue;
@@ -186,6 +190,8 @@ export class Enemy extends EngineObject {
   takeDamage(amount) {
     this.health -= amount;
     particleEffect("sparks", this.pos).emitTime = 0.1;
+    const healthPercentage = this.health / this.startHealth;
+    this.color = hsl(0, 1 - healthPercentage || 0.1, 0.5);
     if (this.health <= 0) {
       this.dead = true;
       this.explode();
