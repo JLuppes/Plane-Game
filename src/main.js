@@ -92,6 +92,7 @@ G.system = {
   powerupTimer: new Timer(),
   firstStart: true,
   speedDisplay: false,
+  soundOn: false,
   cols: {
     white: new Color().setHex("#ffffff"),
     red: new Color().setHex("#ff0000"),
@@ -265,11 +266,11 @@ function gameUpdate() {
   }
 
   if (keyWasPressed("KeyP")) {
-    randomPowerUp()
+    randomPowerUp();
   }
 
-  if(keyWasPressed("KeyO")){
-    randomEnemy()
+  if (keyWasPressed("KeyO")) {
+    randomEnemy();
   }
 
   if (!G.system.gameStarted) {

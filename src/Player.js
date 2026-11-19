@@ -98,7 +98,7 @@ export class Player extends EngineObject {
         keyIsDown("ArrowDown")
       ) {
         particleEffect("dust", vec2(this.pos.x, this.pos.y - 0.9));
-        G.system.sfx.fly.play(this.pos);
+        if (G.system.soundOn) G.system.sfx.fly.play(this.pos);
       }
 
       if (
@@ -143,7 +143,7 @@ export class Player extends EngineObject {
   bullets = [];
 
   shoot() {
-    if (time - this.lastShot > (this.reloadTime/G.playerShootSpeed)) {
+    if (time - this.lastShot > this.reloadTime / G.playerShootSpeed) {
       LOG("Pew!");
 
       this.bullets.push(
@@ -260,7 +260,7 @@ export class Player extends EngineObject {
     this.crashed = time;
     particleEffect("explosion", this.pos);
     this.frame = this.frame + 12;
-    G.system.sfx.hit.play(this.pos);
+    if (G.system.soundOn) G.system.sfx.hit.play(this.pos);
   }
 
   drawShip() {
