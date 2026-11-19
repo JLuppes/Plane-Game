@@ -143,7 +143,7 @@ export class Player extends EngineObject {
   bullets = [];
 
   shoot() {
-    if (time - this.lastShot > this.reloadTime) {
+    if (time - this.lastShot > (this.reloadTime/G.playerShootSpeed)) {
       LOG("Pew!");
 
       this.bullets.push(
