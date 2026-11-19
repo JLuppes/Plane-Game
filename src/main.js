@@ -51,11 +51,12 @@ export const G = {
   powerupCooldown: 2.0,
   playerLives: 1,
   playerDamage: 1,
+  playerShootSpeed: 1,
   invincibleTimeDie: 3,
   invincibleTimeHit: 1,
   friendlyFire: false,
   playerBulletFrame: 12,
-  playerBulletSpriteSheet: "general"
+  playerBulletSpriteSheet: "general",
 };
 
 G.system = {
@@ -64,7 +65,7 @@ G.system = {
   width: 20,
   height: 30,
   tileSize: 16,
-  tileSheets: { ships: 0, general: 1, input: 2, emoji: 3, custom: 4 },
+  tileSheets: { ships: 0, general: 1, input: 2, emojis: 3, custom: 4 },
   tiles: [
     shipsSpritesURL,
     generalSpritesURL,
@@ -215,6 +216,15 @@ function randomEnemy() {
   return newEnemy;
 }
 
+function randomPowerUp() {
+  let powerupWeights = getWeights(listOfPowerups);
+
+  const powerUpChoice = randWeighted(listOfPowerups, powerupWeights);
+  G.system.currentPowerups.push(new PowerUp(G, powerUpChoice));
+  G.system.powerupTimer.set(G.powerupCooldown);
+  G.system.currentPowerups = cleanUp(G.system.currentPowerups);
+}
+
 function launchDemoEnemy() {
   const newDemoEnemy = randomEnemy();
   let newX = G.system.width / 2;
@@ -252,6 +262,14 @@ function gameUpdate() {
   // Handle debug inputs
   if (keyWasPressed("KeyI")) {
     G.system.speedDisplay = !G.system.speedDisplay;
+  }
+
+  if (keyWasPressed("KeyP")) {
+    randomPowerUp()
+  }
+
+  if(keyWasPressed("KeyO")){
+    randomEnemy()
   }
 
   if (!G.system.gameStarted) {
@@ -295,12 +313,7 @@ function gameUpdate() {
     rand() > 1 - 0.005 * G.powerupSpawnRate &&
     G.system.powerupTimer.elapsed()
   ) {
-    let powerupWeights = getWeights(listOfPowerups);
-
-    const powerUpChoice = randWeighted(listOfPowerups, powerupWeights);
-    G.system.currentPowerups.push(new PowerUp(G, powerUpChoice));
-    G.system.powerupTimer.set(G.powerupCooldown);
-    G.system.currentPowerups = cleanUp(G.system.currentPowerups);
+    randomPowerUp();
   }
 
   if (
