@@ -1,11 +1,12 @@
 [
   {
-    "name": "Powershot",
-    "powerLevel": 2,
-    "frame": 25,
-    "duration": 3,
+    "name": "Double Lives",
+    "powerLevel": 3,
+    "frame": 17,
     "spriteSheet": "general",
+    "autoUse": true,
     "gamePropertyOverwrites": {},
-    "gamePropertyAdditions": { "playerDamage": 1 }
+    "gamePropertyAdditions": {},
+    "gamePropertyMultipliers": { "playerLives": 2 }
   }
 ]

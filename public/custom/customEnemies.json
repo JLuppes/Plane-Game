@@ -5,7 +5,7 @@
     "enemySize": 4,
     "frame": 2,
     "tileSheet": "ships",
-    "startHealth": 100,
+    "startHealth": 40,
     "scoreValue": 1000,
     "chasePlayer": true,
     "chaseStyle": "chase",
@@ -20,6 +20,6 @@
     "bulletSpeed": 0.5,
     "bulletFrame": 5,
     "bulletSpriteSheet": "general",
-    "fleeTime": 60
+    "fleeTime": 120
   }
 ]

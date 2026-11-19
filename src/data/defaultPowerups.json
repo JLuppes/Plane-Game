@@ -1,30 +1,43 @@
 [
   {
+    "name": "Powershot",
+    "powerLevel": 2,
+    "frame": 25,
+    "duration": 3,
+    "spriteSheet": "general",
+    "gamePropertyOverwrites": {},
+    "gamePropertyAdditions": { "playerDamage": 1 },
+    "gamePropertyMultipliers": {}
+  },
+  {
     "name": "1-up",
-    "priority": 1,
+    "powerLevel": 1,
     "frame": 24,
     "spriteSheet": "general",
     "autoUse": true,
     "gamePropertyOverwrites": {},
-    "gamePropertyAdditions": { "playerLives": 1 }
+    "gamePropertyAdditions": { "playerLives": 1 },
+    "gamePropertyMultipliers": {}
   },
   {
     "name": "SlowMo",
-    "priority": 2,
+    "powerLevel": 2,
     "frame": 28,
     "spriteSheet": "general",
-    "duration": 5,
-    "gamePropertyOverwrites": { "speed": 0.05 },
-    "gamePropertyAdditions": {}
+    "duration": 8,
+    "gamePropertyOverwrites": { "speed": 0.04 },
+    "gamePropertyAdditions": {},
+    "gamePropertyMultipliers": {}
   },
   {
-    "name": "Double Lives",
-    "priority": 2,
-    "frame": 17,
-    "spriteSheet": "general",
+    "name": "Shot Speed+",
+    "powerLevel": 1,
+    "frame": 0,
+    "spriteSheet": "emojis",
     "autoUse": true,
+    "tileSize": 16,
     "gamePropertyOverwrites": {},
-    "gamePropertyAdditions": {},
-    "gamePropertyMultipliers": { "playerLives": 2 }
+    "gamePropertyAdditions": { "playerShootSpeed": 1 },
+    "gamePropertyMultipliers": {}
   }
 ]
