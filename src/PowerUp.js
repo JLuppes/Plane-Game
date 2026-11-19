@@ -7,19 +7,16 @@ export class PowerUp extends EngineObject {
     let x = game.system.width / 2;
     let y = game.system.height / 2 + 3;
     let pos = vec2(rand(-x, x), y);
-    let frame = powerupData.frame ? powerupData.frame : 24;
-    let defaultPointValue = 100;
-    let spriteSheet = powerupData.spriteSheet
-      ? powerupData.spriteSheet
-      : "general";
-    let tileData = tile(
-      frame,
-      game.system.tileSize,
-      G.system.tileSheets[spriteSheet],
-    );
+    let frame = powerupData.frame || 0;
+    let tileSize = powerupData.tileSize || game.system.tileSize;
+    let pointValue = powerupData.pointValue || 100;
+    let spriteSheet = powerupData.spriteSheet || "general";
+    let displaySize = powerupData.size || 1;
+    let tileData = tile(frame, tileSize, G.system.tileSheets[spriteSheet]);
 
-    super(pos, vec2(0.8), tileData);
+    super(pos, vec2(0.8 * displaySize), tileData);
 
+    this.displaySize = displaySize;
     this.game = game;
     this.setCollision(true, true, false, false);
     this.gameType = "powerUp";
@@ -28,13 +25,12 @@ export class PowerUp extends EngineObject {
 
     this.powerupData = powerupData;
     this.tileData = tileData;
+    this.tileSize = tileSize;
     this.name = powerupData.name ? powerupData.name : "Powerup";
     this.angle = powerupData.angle ? powerupData.angle : 0;
     this.drawSize = powerupData.drawSize ? vec2(powerupData.drawSize) : vec2(2);
     this.speedFactor = powerupData.speedFactor ? powerupData.speedFactor : 1;
-    this.pointValue = powerupData.pointValue
-      ? powerupData.pointValue
-      : defaultPointValue;
+    this.pointValue = pointValue;
   }
 
   startUp() {
