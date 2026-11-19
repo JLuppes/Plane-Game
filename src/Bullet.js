@@ -25,7 +25,7 @@ export class Bullet extends EngineObject {
     this.game = game;
 
     this.setCollision(true, true, false, false);
-    this.drawSize = vec2(2).multiply(vec2(bulletDamage));
+    this.drawSize = vec2(2).multiply(vec2(0.5 + bulletDamage / 10));
     this.speed = vec2(Math.sin(angle), Math.cos(angle));
     this.gameType = "bullet";
     this.gameSource = source.gameType;

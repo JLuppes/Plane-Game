@@ -23,6 +23,7 @@ export class Enemy extends EngineObject {
     let scoreValue = enemyData.scoreValue || 10;
     let chasePlayer = enemyData.chasePlayer || true;
     let chaseStyle = enemyData.chaseStyle || "chase";
+    let chaseDistance = enemyData.chaseDistance || 10;
     let shootPlayer = enemyData.shootPlayer || true;
     let shootStyle = enemyData.shootStyle || "straight";
     let handleSpeed = enemyData.handleSpeed || 1;
@@ -32,6 +33,8 @@ export class Enemy extends EngineObject {
     let crashDamage = enemyData.crashDamage || 1;
     let bulletSpeed = enemyData.bulletSpeed || 0.3;
     let fleeTime = enemyData.fleeTime || 10;
+    let bulletFrame = enemyData.bulletFrame || 1;
+    let bulletSpriteSheet = enemyData.bulletSpriteSheet || "general";
 
     let frame = enemyData.frame || 8;
     let tileSheet = enemyData.tileSheet || "ships";
@@ -52,23 +55,27 @@ export class Enemy extends EngineObject {
 
     this.name = name;
     this.setCollision(true, false, false, false);
-    this.drawSize = vec2(2);
+    this.drawSize = vec2(size);
     this.velocity = vel;
     this.gameType = "enemy";
     this.health = startHealth;
     this.dead = false;
     this.scoreValue = scoreValue;
     this.chasePlayer = chasePlayer;
-    this.shootPlayer = true;
+    this.chaseDistance = chaseDistance / 2 + rand() * chaseDistance;
+    this.shootPlayer = shootPlayer;
+    this.shootStyle = shootStyle;
     this.handleSpeed = handleSpeed;
     this.chaseStyle = chaseStyle;
-    this.maxXSpeed = maxXSpeed * 0.1;
+    this.maxXSpeed = (maxXSpeed * 0.1) / 2 + maxXSpeed * rand() * 0.1;
     this.shootTimer = new Timer(shootPattern[0]);
     this.shootCounter = 0;
     this.shootPattern = shootPattern;
     this.shootDamage = shootDamage;
     this.crashDamage = crashDamage;
     this.bulletSpeed = bulletSpeed;
+    this.bulletFrame = bulletFrame;
+    this.bulletSpriteSheet = bulletSpriteSheet;
     this.met = new Set();
     this.demoSpeed = -0.1;
     this.fleeTime = fleeTime;
@@ -82,11 +89,10 @@ export class Enemy extends EngineObject {
       return;
     }
     if (this.chasePlayer && this.chaseStyle == "chase") {
-      let chaseDist = 12;
       let distFromPlayer = this.pos.distance(this.game.system.player.pos);
       let xDif = this.pos.x - G.system.player.pos.x;
       this.velocity.x += xDif * this.handleSpeed * -0.001;
-      this.velocity.y = (distFromPlayer - chaseDist) / 100;
+      this.velocity.y = (distFromPlayer - this.chaseDistance) / 100;
     } else if (this.chasePlayer && this.chaseStyle == "flee") {
       this.velocity.y = this.game.speed * 2;
     } else if (this.chasePlayer && this.chaseStyle == "dive") {
@@ -152,7 +158,13 @@ export class Enemy extends EngineObject {
       scale: 0.3,
     });
 
-    new Bullet(this.game, this, this.bulletSpeed, 1);
+    new Bullet(
+      this.game,
+      this,
+      this.bulletSpeed,
+      this.bulletFrame,
+      this.bulletSpriteSheet,
+    );
 
     let newWaitTime =
       this.shootPattern[this.shootCounter++ % this.shootPattern.length];

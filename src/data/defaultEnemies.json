@@ -11,11 +11,36 @@
     "shootPlayer": true,
     "shootStyle": "straight",
     "handleSpeed": 1,
-    "maxXSpeed": 1,
+    "maxXSpeed": 0.5,
     "shootPattern": [0.2, 0.2, 2],
     "shootDamage": 0.5,
     "crashDamage": 1,
     "bulletSpeed": 0.3,
-    "fleeTime": 10
+    "fleeTime": 10,
+    "bulletFrame": 12,
+    "bulletSpriteSheet": "general"
+  },
+  {
+    "enemyName": "Big Grunt",
+    "powerLevel": 2,
+    "enemySize": 2,
+    "frame": 1,
+    "tileSheet": "ships",
+    "startHealth": 10,
+    "scoreValue": 100,
+    "chasePlayer": true,
+    "chaseStyle": "chase",
+    "chaseDistance": 10,
+    "shootPlayer": true,
+    "shootStyle": "straight",
+    "handleSpeed": 1,
+    "maxXSpeed": 1,
+    "shootPattern": [0.6, 0.6, 4],
+    "shootDamage": 6,
+    "crashDamage": 1,
+    "bulletSpeed": 0.3,
+    "bulletFrame": 13,
+    "bulletSpriteSheet": "general",
+    "fleeTime": 20
   }
 ]

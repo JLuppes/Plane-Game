@@ -1,22 +1,25 @@
 [
   {
-    "enemyName": "Big Grunt",
-    "powerLevel": 3,
-    "enemySize": 10,
-    "frame": 1,
+    "enemyName": "Mega Boss",
+    "powerLevel": 4,
+    "enemySize": 4,
+    "frame": 2,
     "tileSheet": "ships",
-    "startHealth": 2,
-    "scoreValue": 100,
+    "startHealth": 100,
+    "scoreValue": 1000,
     "chasePlayer": true,
     "chaseStyle": "chase",
+    "chaseDistance": 20,
     "shootPlayer": true,
     "shootStyle": "straight",
     "handleSpeed": 1,
     "maxXSpeed": 1,
-    "shootPattern": [0.2, 0.2, 2],
-    "shootDamage": 0.5,
-    "crashDamage": 1,
-    "bulletSpeed": 0.3,
-    "fleeTime": 20
+    "shootPattern": [1.2, 1.2, 6],
+    "shootDamage": 9,
+    "crashDamage": 8,
+    "bulletSpeed": 0.5,
+    "bulletFrame": 5,
+    "bulletSpriteSheet": "general",
+    "fleeTime": 60
   }
 ]

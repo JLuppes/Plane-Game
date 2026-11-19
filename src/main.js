@@ -54,6 +54,8 @@ export const G = {
   invincibleTimeDie: 3,
   invincibleTimeHit: 1,
   friendlyFire: false,
+  playerBulletFrame: 12,
+  playerBulletSpriteSheet: "general"
 };
 
 G.system = {

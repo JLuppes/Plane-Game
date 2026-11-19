@@ -1,7 +1,7 @@
 [
   {
     "name": "Powershot",
-    "priority": 99,
+    "powerLevel": 2,
     "frame": 25,
     "duration": 3,
     "spriteSheet": "general",

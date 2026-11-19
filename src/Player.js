@@ -48,6 +48,8 @@ export class Player extends EngineObject {
     this.reloadTime = 0.2;
     this.lastShot = time;
     this.gameType = "player";
+
+    this.bulletFrame = 1;
   }
 
   handleInput() {
@@ -144,7 +146,9 @@ export class Player extends EngineObject {
     if (time - this.lastShot > this.reloadTime) {
       LOG("Pew!");
 
-      this.bullets.push(new Bullet(G, this, 1, 12));
+      this.bullets.push(
+        new Bullet(G, this, 1, G.playerBulletFrame, G.playerBulletSpriteSheet),
+      );
 
       particleEffect("muzzle", vec2(this.pos.x - 0.6, this.pos.y + 0.55), {
         scale: 0.3,
